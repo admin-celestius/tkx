@@ -3,9 +3,12 @@
 //     <>Sorry pa inu ethuvum panla</>
 //   );
 // }
+import LoadingPage from "@/components/LoadingScreen";
 
 export default function Home() {
   return (
+    <>
+    <LoadingPage />
     <main className="min-h-screen w-full bg-neutral-950 text-white">
       {/* Hero */}
       <section className="h-screen flex flex-col items-center justify-center gap-4">
@@ -35,5 +38,6 @@ export default function Home() {
         <p className="text-xl opacity-80">End of Page</p>
       </footer>
     </main>
+    </>
   );
 }
