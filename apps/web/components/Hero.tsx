@@ -44,8 +44,8 @@ export default function Hero() {
 
         const particles: Particle[] = [];
         const fogLayers: Fog[] = [];
-        const particleCount = 200;
-        const fogCount = 40;
+        const particleCount = 80; // Reduced for cleaner look
+        const fogCount = 15; // Reduced fog
 
         // Initialize particles
         for (let i = 0; i < particleCount; i++) {
@@ -70,7 +70,7 @@ export default function Hero() {
                 size: Math.random() * 200 + 100,
                 speedY: -(Math.random() * 25 + 15), // Much faster upward speed (15-40px per frame)
                 opacity: 0, // Start invisible
-                drift: (Math.random() - 0.5) * 0.2, // Less drift at high speed
+                drift: (Math.random() - 0.5) * 0.1, // Less drift for cleaner look
             });
         }
 
@@ -106,8 +106,8 @@ export default function Hero() {
                     fog.y += fog.speedY * windIntensity;
                     fog.x += fog.drift;
 
-                    // Fade in fog faster
-                    if (fog.opacity < 0.15) fog.opacity += 0.01;
+                    // Fade in fog - more subtle
+                    if (fog.opacity < 0.08) fog.opacity += 0.005;
 
                     // Wrap around
                     if (fog.y < -300) {
@@ -116,9 +116,9 @@ export default function Hero() {
                         fog.opacity = 0;
                     }
 
-                    // Draw Fog
+                    // Draw Fog - more subtle
                     const gradient = ctx.createRadialGradient(fog.x, fog.y, 0, fog.x, fog.y, fog.size);
-                    gradient.addColorStop(0, `rgba(255, 255, 255, ${fog.opacity * 0.5})`);
+                    gradient.addColorStop(0, `rgba(255, 255, 255, ${fog.opacity * 0.3})`);
                     gradient.addColorStop(1, "rgba(255, 255, 255, 0)");
                     ctx.fillStyle = gradient;
                     ctx.beginPath();
@@ -215,43 +215,46 @@ export default function Hero() {
                     gradient.addColorStop(0.9, "rgba(255, 255, 255, 0.9)");
                     gradient.addColorStop(1, "#ffffff");
 
-                    // --- 4. Draw The Comet (V-Shaped Air Resistance Trail) ---
+                    // --- 4. Draw The Comet (V-Shaped Flaming Trail) ---
 
-                    // V-cone dimensions - 45 degree angle from center
+                    // V-cone dimensions - 30 degree angle
                     const trailHeight = headY - tailY;
-                    const coneWidth = trailHeight * 0.7; // ~45 degree spread
+                    const coneWidth = trailHeight * 0.4; // ~30 degree spread (tan(22°) ≈ 0.4)
 
-                    // Tangent offset - trail starts from sides of the tip, not center point
+                    // Tangent offset - trail starts from sides of the tip
                     const tipRadius = 6;
 
-                    // Irregularity - organic wobble on trail edges
-                    const wobble1 = Math.sin(time * 5) * 8;
-                    const wobble2 = Math.sin(time * 7 + 2) * 6;
-                    const wobble3 = Math.sin(time * 4 + 1) * 10;
+                    // Irregularity - intense wobble for chaotic flame effect
+                    const wobble1 = Math.sin(time * 8) * 12 + Math.sin(time * 13) * 5;
+                    const wobble2 = Math.sin(time * 10 + 2) * 15 + Math.cos(time * 7) * 6;
+                    const wobble3 = Math.sin(time * 6 + 1) * 10 + Math.sin(time * 15) * 4;
 
-                    // A. Create gradient for the V-trail (transparent white fade)
+                    // A. Create gradient for the V-trail
                     const trailGradient = ctx.createLinearGradient(centerX, tailY, centerX, headY);
-                    trailGradient.addColorStop(0, "rgba(255, 255, 255, 0)"); // Fully transparent at tail
-                    trailGradient.addColorStop(0.3, "rgba(255, 255, 255, 0.03)");
-                    trailGradient.addColorStop(0.7, "rgba(255, 255, 255, 0.08)");
-                    trailGradient.addColorStop(1, "rgba(255, 255, 255, 0.2)"); // Slightly visible at head
+                    trailGradient.addColorStop(0, "rgba(255, 255, 255, 0)"); // Transparent at tail
+                    trailGradient.addColorStop(0.3, "rgba(255, 200, 100, 0.05)"); // Warm glow
+                    trailGradient.addColorStop(0.7, "rgba(255, 255, 255, 0.1)");
+                    trailGradient.addColorStop(1, "rgba(255, 255, 255, 0.2)"); // Near head
 
-                    // Draw unified V-shaped cone with organic edges (tangent to tip)
+                    // Draw V-shaped cone with organic edges (tangent to tip)
                     const headX = centerX + jitterX;
                     const headPosY = headY + jitterY;
 
                     ctx.beginPath();
                     // Start from left side of tip (tangent)
                     ctx.moveTo(headX - tipRadius, headPosY);
-                    // Curve to left edge with wobble
+
+                    // Curve to left edge of V with wobble
                     ctx.quadraticCurveTo(
                         centerX - coneWidth * 0.5 + wobble1,
                         tailY + trailHeight * 0.5,
                         centerX - coneWidth + wobble2,
                         tailY
                     );
+
                     // Across the tail with wobble
                     ctx.lineTo(centerX + coneWidth + wobble3, tailY);
+
                     // Curve back to right side of tip
                     ctx.quadraticCurveTo(
                         centerX + coneWidth * 0.5 - wobble1,
@@ -259,6 +262,7 @@ export default function Hero() {
                         headX + tipRadius,
                         headPosY
                     );
+
                     ctx.closePath();
                     ctx.fillStyle = trailGradient;
                     ctx.fill();
@@ -272,19 +276,54 @@ export default function Hero() {
                     ctx.lineCap = "round";
                     ctx.stroke();
 
-                    // C. Bright Tip (Impact Point)
+                    // C. Twinkling Star (Impact Point)
                     if (phase === "line" || phase === "wind") {
+                        const starX = centerX + jitterX;
+                        const starY = headY + jitterY;
+
+                        // Twinkling animation - each spike pulses independently
+                        const twinkle1 = 1 + 0.4 * Math.sin(time * 15);
+                        const twinkle2 = 1 + 0.3 * Math.sin(time * 20 + 1);
+                        const twinkle3 = 1 + 0.35 * Math.sin(time * 18 + 2);
+                        const twinkle4 = 1 + 0.45 * Math.sin(time * 12 + 3);
+
+                        // Star dimensions - larger size
+                        const innerRadius = 5;
+                        const outerRadius = 20;
+
+                        // Draw X-shaped 4-pointed star with individual spike pulses (diagonal)
                         ctx.beginPath();
-                        const tipPulse = 1 + 0.15 * Math.sin(time * 25);
-                        ctx.arc(centerX + jitterX, headY + jitterY, 6 * tipPulse, 0, Math.PI * 2);
-                        ctx.fillStyle = "#ffffff";
-                        // Double shadow for intense glow
-                        ctx.shadowBlur = 20;
-                        ctx.shadowColor = "rgba(255, 200, 100, 0.8)";
+                        const diag = 0.707; // cos(45°) = sin(45°) ≈ 0.707
+
+                        // Top-right spike
+                        ctx.moveTo(starX + outerRadius * diag * twinkle1, starY - outerRadius * diag * twinkle1);
+                        ctx.lineTo(starX + innerRadius * 0.3, starY);
+
+                        // Bottom-right spike
+                        ctx.lineTo(starX + outerRadius * diag * twinkle2, starY + outerRadius * diag * twinkle2);
+                        ctx.lineTo(starX, starY + innerRadius * 0.3);
+
+                        // Bottom-left spike
+                        ctx.lineTo(starX - outerRadius * diag * twinkle3, starY + outerRadius * diag * twinkle3);
+                        ctx.lineTo(starX - innerRadius * 0.3, starY);
+
+                        // Top-left spike
+                        ctx.lineTo(starX - outerRadius * diag * twinkle4, starY - outerRadius * diag * twinkle4);
+                        ctx.lineTo(starX, starY - innerRadius * 0.3);
+
+                        ctx.closePath();
+
+                        // Fill with blue comet glow
+                        ctx.fillStyle = "#e0f4ff"; // Light blue-white core
+                        ctx.shadowBlur = 30;
+                        ctx.shadowColor = "rgba(100, 180, 255, 0.95)"; // Blue glow
                         ctx.fill();
-                        ctx.shadowBlur = 40;
-                        ctx.shadowColor = "rgba(255, 255, 255, 0.6)";
+
+                        // Second glow layer - cyan
+                        ctx.shadowBlur = 60;
+                        ctx.shadowColor = "rgba(150, 220, 255, 0.6)";
                         ctx.fill();
+
                         ctx.shadowBlur = 0; // Reset
                     }
                 }
