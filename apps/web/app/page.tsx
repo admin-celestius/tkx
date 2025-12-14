@@ -13,7 +13,6 @@ const SLIDES = [
 export default function Home() {
   return (
     <>
-
       <LoadingPage />
       <Hero />
      <section>
