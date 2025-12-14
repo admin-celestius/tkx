@@ -23,7 +23,8 @@ const Carousel: React.FC<CarouselProps> = ({ slides }) => {
     const isSnappingRef = useRef(false);
     const speedRef = useRef(0.026); // 1.3x speed (approx 1.3 * 0.02)
     const baseSpeed = 0.026;
-    const hoverSpeed = 0.10; // Scaled hover speed
+    const hoverSpeed = 0; // Stop on hover
+    const interactionTimerRef = useRef<NodeJS.Timeout | null>(null);
 
 
 
@@ -164,10 +165,6 @@ const Carousel: React.FC<CarouselProps> = ({ slides }) => {
         <div
             className="relative w-full h-[600px] flex items-center justify-center overflow-hidden perspective-1000"
             ref={containerRef}
-            onMouseEnter={() => setIsHovering(true)}
-            onMouseLeave={() => setIsHovering(false)}
-            onTouchStart={() => setIsHovering(true)}
-            onTouchEnd={() => setIsHovering(false)}
             tabIndex={0}
             onKeyDown={handleKeyDown}
             role="region"
@@ -176,36 +173,57 @@ const Carousel: React.FC<CarouselProps> = ({ slides }) => {
             {/* Floor Reflection Gradient */}
             <div className="absolute bottom-0 w-full h-1/2 bg-gradient-to-t from-black via-transparent to-transparent pointer-events-none z-10" />
 
-            {slides.map((slide, i) => (
-                <div
-                    key={i}
-                    className="carousel-slide absolute top-1/2 left-1/2 w-[220px] h-[320px] -ml-[110px] -mt-[160px] transform-style-3d will-change-transform cursor-pointer"
-                    onClick={() => handleSlideClick(i)}
-                >
-                    {/* Slide Content */}
-                    <div className="slide-inner w-full h-full rounded-xl overflow-hidden border-2 border-white/10 transition-all duration-300 relative bg-gray-900 group">
-                        <img
-                            src={slide.image}
-                            alt={slide.title}
-                            className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700"
-                            loading="lazy"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60"></div>
-                        <div className="absolute bottom-0 left-0 p-6 text-white transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
-                            <h3 className="text-xl font-bold font-sans tracking-wide">{slide.title}</h3>
+            {
+                slides.map((slide, i) => (
+                    <div
+                        key={i}
+                        className="carousel-slide absolute top-1/2 left-1/2 w-[220px] h-[320px] -ml-[110px] -mt-[160px] transform-style-3d will-change-transform cursor-pointer"
+                        onClick={() => {
+                            handleSlideClick(i);
+                            // Clear existing timer if any
+                            if (interactionTimerRef.current) clearTimeout(interactionTimerRef.current);
+                            setIsHovering(true); // Ensure it's paused
+                            // Set timer to resume after 15 seconds
+                            interactionTimerRef.current = setTimeout(() => {
+                                setIsHovering(false);
+                            }, 15000);
+                        }}
+                        onMouseEnter={() => setIsHovering(true)}
+                        onMouseLeave={() => {
+                            setIsHovering(false);
+                            if (interactionTimerRef.current) clearTimeout(interactionTimerRef.current);
+                        }}
+                        onTouchStart={() => setIsHovering(true)}
+                        onTouchEnd={() => {
+                            setIsHovering(false);
+                            if (interactionTimerRef.current) clearTimeout(interactionTimerRef.current);
+                        }}
+                    >
+                        {/* Slide Content */}
+                        <div className="slide-inner w-full h-full rounded-xl overflow-hidden border-2 border-white/10 transition-all duration-300 relative bg-gray-900 group">
+                            <img
+                                src={slide.image}
+                                alt={slide.title}
+                                className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700"
+                                loading="lazy"
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60"></div>
+                            <div className="absolute bottom-0 left-0 p-6 text-white transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
+                                <h3 className="text-xl font-bold font-sans tracking-wide">{slide.title}</h3>
+                            </div>
+
+                            {/* Glossy highlight */}
+                            <div className="absolute top-0 right-0 w-full h-full bg-gradient-to-bl from-white/10 to-transparent pointer-events-none"></div>
                         </div>
 
-                        {/* Glossy highlight */}
-                        <div className="absolute top-0 right-0 w-full h-full bg-gradient-to-bl from-white/10 to-transparent pointer-events-none"></div>
+                        {/* Reflection below */}
+                        <div className="absolute top-full left-0 w-full h-full transform scale-y-[-1] opacity-30 mask-gradient pointer-events-none filter blur-sm">
+                            <img src={slide.image} alt="" className="w-full h-full object-cover rounded-xl" />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent"></div>
+                        </div>
                     </div>
-
-                    {/* Reflection below */}
-                    <div className="absolute top-full left-0 w-full h-full transform scale-y-[-1] opacity-30 mask-gradient pointer-events-none filter blur-sm">
-                        <img src={slide.image} alt="" className="w-full h-full object-cover rounded-xl" />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent"></div>
-                    </div>
-                </div>
-            ))}
+                ))
+            }
 
             {/* Ambient Light Vignette */}
             <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle,transparent,rgba(0,0,0,0.8))] z-20"></div>
