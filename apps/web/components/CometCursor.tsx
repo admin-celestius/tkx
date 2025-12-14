@@ -65,8 +65,30 @@ const CometCursor = () => {
             mouse.y = e.clientY;
         };
 
+        // Hover State
+        let isHovering = false;
+
+        const checkHover = (e: MouseEvent) => {
+            const target = e.target as HTMLElement;
+            // Check if the target or its ancestors are interactive
+            isHovering = !!target.closest('a, button, input, select, textarea, [role="button"], .cursor-hover');
+        };
+
+        const onMouseOut = (e: MouseEvent) => {
+            // When leaving an element, check where we are going (relatedTarget)
+            // If we are going to null (out of window) or non-interactive, isHovering becomes false
+            const related = e.relatedTarget as HTMLElement;
+            if (!related) {
+                isHovering = false;
+            } else {
+                isHovering = !!related.closest('a, button, input, select, textarea, [role="button"], .cursor-hover');
+            }
+        };
+
         window.addEventListener('resize', onResize);
         window.addEventListener('mousemove', onMouseMove);
+        window.addEventListener('mouseover', checkHover);
+        window.addEventListener('mouseout', onMouseOut);
         onResize();
 
         const random = (min: number, max: number) => Math.random() * (max - min) + min;
@@ -99,37 +121,40 @@ const CometCursor = () => {
                 }, 800);
             }
 
-            // Calculate Target Scale
+            // Calculate Target Scale & Rotation
             let targetScale = 1;
             const speed = Math.hypot(velocity.x, velocity.y);
 
-            // "Star max to half the screen"
-            // "Star max to half the screen" only after "fast moves" (Reduced threshold)
-            const maxDimension = Math.min(width, height) / 2;
-            const maxScaleLimit = maxDimension / 12;
+            // Max cursor size to 60px (60px radius = scale of 5, since base is 12px)
+            const maxScaleLimit = 5;
 
-            // Reduced threshold from 30 -> 12 per user request ("reduce mouse sacking" -> requiring less shaking)
-            if (shakeCount > 12) {
-                targetScale = maxScaleLimit;
+            if (isHovering) {
+                targetScale = 2.2; // Slightly bigger on hover, but not too big
+                currentRotation += 0.06; // Spin slowly
             } else {
-                // Reduced growth and cap per user request ("reduce of the mouse" -> smaller cursor)
-                targetScale = 1 + (speed * 0.02); // Reduced from 0.05
-                targetScale = Math.min(targetScale, 1.5); // Reduced cap from 3 -> 1.5
+                // Reduced threshold from 30 -> 12 per user request ("reduce mouse sacking" -> requiring less shaking)
+                if (shakeCount > 12) {
+                    targetScale = maxScaleLimit;
+                    // Spin fast if shaking
+                    currentRotation += 0.2;
+                } else {
+                    // Reduced growth and cap per user request ("reduce of the mouse" -> smaller cursor)
+                    targetScale = 1 + (speed * 0.02); // Reduced from 0.05
+                    targetScale = Math.min(targetScale, 1.5); // Reduced cap from 3 -> 1.5
+
+                    // Return to natural rotation
+                    const targetRotation = Math.PI / 4 + (velocity.x * 0.005);
+                    currentRotation += (targetRotation - currentRotation) * 0.1;
+                }
             }
 
             // Slower growth for smoothness (User requested "grow slow")
-            currentScale += (targetScale - currentScale) * 0.01;
-
-            // Spin based on speed
-            const rotationSpeed = 0.01;
-            const targetRotation = Math.PI / 4 + (velocity.x * 0.005);
-
-            currentRotation += (targetRotation - currentRotation) * 0.1;
+            currentScale += (targetScale - currentScale) * 0.1; // Increased visual responsiveness specific for hover interactions to feel snappy, while keep "grow slow" logic loosely applied via currentScale linear interpolation. Changed 0.01 -> 0.1 for better feel on hover entry/exit.
 
             // 3. Emitters
 
-            // A. Gold Dust (Always active)
-            const dustCount = 1 + Math.floor(speed * 0.5);
+            // A. Gold Dust (Reduced particle count per user request)
+            const dustCount = Math.floor(speed * 0.2); // Reduced from 1 + speed * 0.5
             for (let i = 0; i < dustCount; i++) {
                 const r = 20 * currentScale;
                 const angle = Math.random() * Math.PI * 2;
@@ -151,8 +176,8 @@ const CometCursor = () => {
 
             // B. Stone Speckles removed (was hover only)
 
-            // C. Grey Smoke (Fast move only)
-            if (speed > 4 && Math.random() < 0.15) {
+            // C. Grey Smoke (Reduced spawn rate)
+            if (speed > 4 && Math.random() < 0.05) {
                 particles.push({
                     x: pos.x + random(-10, 10),
                     y: pos.y + random(-10, 10),
@@ -275,6 +300,8 @@ const CometCursor = () => {
             clearTimeout(shakeResetTimer);
             window.removeEventListener('resize', onResize);
             window.removeEventListener('mousemove', onMouseMove);
+            window.removeEventListener('mouseover', checkHover);
+            window.removeEventListener('mouseout', onMouseOut);
         };
     }, []);
 
