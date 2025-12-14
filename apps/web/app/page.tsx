@@ -1,6 +1,7 @@
 import LoadingPage from "@/components/LoadingScreen";
 import Hero from "@/components/Hero";
 import Carousel from "@/components/Carousel";
+import Footer from "@/components/Footer";
 
 const SLIDES = [
     { image: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=800&auto=format&fit=crop", title: "Retro Tech" },
@@ -40,6 +41,9 @@ export default function Home() {
       </section>
       <section>
           <Carousel slides={SLIDES}/>
+      </section>
+      <section>
+        <Footer/>
       </section>
     </>
   );

@@ -1,0 +1,118 @@
+/* Galaxy Background */
+.footerContainer {
+    background-image: url('/galaxy-footer-bg-gold.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    position: relative;
+    overflow: hidden;
+    /* Cursor tracker variables */
+    --x: 50%;
+    --y: 50%;
+}
+
+/* Golden Gradients & Text */
+.goldText {
+    background: linear-gradient(to bottom, #cfc09f 22%, #ffecb3 24%, #3a2c0f 26%, #99752d 27%, #ffecb3 40%, #bf953f 78%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    color: transparent;
+    filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.5));
+}
+
+/* Mouse Highlight Spotlight */
+.spotlight {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(800px circle at var(--x) var(--y), rgba(255, 215, 0, 0.08), transparent 40%);
+    pointer-events: none;
+    z-index: 1;
+}
+
+/* Smoke Architecture - Gray & Mild */
+.smokeContainer {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 250px;
+    /* Reduced height for subtlety */
+    pointer-events: none;
+    z-index: 2;
+    overflow: hidden;
+    mask-image: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+}
+
+.smokeLayer {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 200%;
+    height: 100%;
+    background-image: url('/gray-smoke.png');
+    background-size: 50% 100%;
+    background-repeat: repeat-x;
+    opacity: 0.2;
+    /* Reduced opacity for lightness */
+    mix-blend-mode: screen;
+    /* Blend mode for softness */
+    filter: contrast(0.8) blur(1px);
+    /* Soften edges */
+}
+
+.smoke1 {
+    animation: moveSmoke 40s linear infinite;
+    /* Slower animation */
+}
+
+.smoke2 {
+    bottom: -20px;
+    opacity: 0.15;
+    animation: moveSmoke 50s linear infinite reverse;
+}
+
+.smoke3 {
+    bottom: -40px;
+    opacity: 0.1;
+    animation: moveSmoke 60s linear infinite;
+    filter: blur(8px) grayscale(100%);
+}
+
+@keyframes moveSmoke {
+    0% {
+        transform: translateX(0);
+    }
+
+    100% {
+        transform: translateX(-50%);
+    }
+}
+
+/* Gold Dust Particles */
+.dustParticle {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    background: #ffd700;
+    border-radius: 50%;
+    pointer-events: none;
+    transform: translate(-50%, -50%);
+    opacity: 0;
+    box-shadow: 0 0 6px #ffd700, 0 0 10px #b8860b;
+    animation: dustFade 1.5s ease-out forwards;
+    z-index: 10;
+}
+
+@keyframes dustFade {
+    0% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+    }
+
+    100% {
+        opacity: 0;
+        transform: translate(-50%, 20px) scale(0);
+        /* Drift down and shrink */
+    }
+}
