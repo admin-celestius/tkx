@@ -44,19 +44,41 @@ export default function Hero() {
 
         const particles: Particle[] = [];
         const fogLayers: Fog[] = [];
-        const particleCount = 80; // Reduced for cleaner look
-        const fogCount = 15; // Reduced fog
+        const particleCount = 300; // Increased for space feel
+        const fogCount = 30; // Increased fog
 
-        // Initialize particles
+        // Initialize particles with layers
         for (let i = 0; i < particleCount; i++) {
+            const layerRandom = Math.random();
+            let baseSpeedY = 0;
+            let size = 0;
+            let opacity = 0;
+
+            if (layerRandom < 0.6) {
+                // Background Stars (Stationary/Very Slow) - 60%
+                baseSpeedY = -(Math.random() * 0.05 + 0.01); // Almost stationary
+                size = Math.random() * 1.5 + 0.5; // Small
+                opacity = Math.random() * 0.4 + 0.1; // Dimmer
+            } else if (layerRandom < 0.85) {
+                // Mid-ground Particles (Slow Floating) - 25%
+                baseSpeedY = -(Math.random() * 0.3 + 0.1);
+                size = Math.random() * 2 + 1;
+                opacity = Math.random() * 0.5 + 0.3;
+            } else {
+                // Foreground Particles (Active) - 15%
+                baseSpeedY = -(Math.random() * 0.6 + 0.3); // Visible movement but still space-like slow
+                size = Math.random() * 3 + 1.5; // Larger
+                opacity = Math.random() * 0.6 + 0.4;
+            }
+
             particles.push({
                 x: Math.random() * canvas.width,
                 y: Math.random() * canvas.height,
-                size: Math.random() * 2.5 + 0.5,
-                baseSpeedY: -(Math.random() * 2 + 1.5), // Base upward speed for wind phase
-                speedX: (Math.random() - 0.5) * 0.3,
+                size: size,
+                baseSpeedY: baseSpeedY,
+                speedX: 0, // Strictly vertical
                 speedY: 0,
-                opacity: Math.random() * 0.5 + 0.2,
+                opacity: opacity,
                 floatOffset: Math.random() * Math.PI * 2,
                 floatSpeed: Math.random() * 0.02 + 0.01,
             });
@@ -130,13 +152,16 @@ export default function Hero() {
             // Draw particles
             particles.forEach((particle) => {
                 if (phase === "floating") {
-                    // Gentle floating motion
-                    particle.x += Math.sin(time * 2 + particle.floatOffset) * 0.3;
-                    particle.y += Math.cos(time * 1.5 + particle.floatOffset) * 0.2;
+                    // Gentle floating motion - Vertical only
+                    // particle.x += Math.sin(time * 2 + particle.floatOffset) * 0.3; // Removed horizontal
+
+                    // Allow even stationary stars to breathe slightly
+                    particle.y += Math.cos(time * 0.5 + particle.floatOffset) * 0.1;
                 } else if (phase === "wind") {
                     // Wind effect - accelerate upward
-                    particle.speedY = particle.baseSpeedY * windIntensity;
-                    particle.x += particle.speedX + Math.sin(time * 3 + particle.floatOffset) * 0.5;
+                    particle.speedY = particle.baseSpeedY * (0.2 + windIntensity * 0.8); // Ensure minimum movement
+
+                    // particle.x += particle.speedX + Math.sin(time * 3 + particle.floatOffset) * 0.5; // Removed horizontal
                     particle.y += particle.speedY;
 
                     // Wrap around
@@ -185,7 +210,7 @@ export default function Hero() {
             // Draw line (during line phase and after)
             if (phase === "line" || phase === "wind") {
                 // --- 1. Animation Logic & Trail Calculation ---
-                const trailLength = 150; // Shorter, tighter comet trail
+                const trailLength = 250; // Length 250 as requested
                 const headY = lineProgress * lineTargetY;
                 const tailY = Math.max(-100, headY - trailLength);
 
@@ -219,7 +244,7 @@ export default function Hero() {
 
                     // V-cone dimensions - 30 degree angle
                     const trailHeight = headY - tailY;
-                    const coneWidth = trailHeight * 0.4; // ~30 degree spread (tan(22°) ≈ 0.4)
+                    const coneWidth = trailHeight * 0.4; // Reverted cone width
 
                     // Tangent offset - trail starts from sides of the tip
                     const tipRadius = 6;
@@ -272,59 +297,55 @@ export default function Hero() {
                     ctx.moveTo(centerX + jitterX, headY + jitterY);
                     ctx.lineTo(centerX, tailY);
                     ctx.strokeStyle = gradient;
-                    ctx.lineWidth = 2;
+                    ctx.lineWidth = 6; // Thicker center line
                     ctx.lineCap = "round";
                     ctx.stroke();
 
-                    // C. Twinkling Star (Impact Point)
+                    // C. Comet Cursor Style Star (Impact Point)
                     if (phase === "line" || phase === "wind") {
+                        // Lock/Hide Cursor
+                        document.body.style.cursor = 'none';
+                        const customCursor = document.querySelector('.custom-cursor') as HTMLElement;
+                        if (customCursor) customCursor.style.opacity = '0';
+
                         const starX = centerX + jitterX;
                         const starY = headY + jitterY;
 
-                        // Twinkling animation - each spike pulses independently
-                        const twinkle1 = 1 + 0.4 * Math.sin(time * 15);
-                        const twinkle2 = 1 + 0.3 * Math.sin(time * 20 + 1);
-                        const twinkle3 = 1 + 0.35 * Math.sin(time * 18 + 2);
-                        const twinkle4 = 1 + 0.45 * Math.sin(time * 12 + 3);
+                        // Ported from CometCursor.tsx
+                        ctx.save();
+                        ctx.translate(starX, starY);
+                        // Rotate based on time to simulate cursor spin
+                        ctx.rotate(time * 2);
 
-                        // Star dimensions - larger size
-                        const innerRadius = 5;
-                        const outerRadius = 20;
+                        // Pulsate scale slightly
+                        const currentScale = 1 + 0.1 * Math.sin(time * 10);
+                        ctx.scale(currentScale, currentScale);
 
-                        // Draw X-shaped 4-pointed star with individual spike pulses (diagonal)
+                        const starSize = 12 * 1.5; // Slightly larger for the hero animation
+                        const innerSize = 2 * 1.5;
+
+                        const starGrad = ctx.createRadialGradient(0, 0, 0, 0, 0, starSize);
+                        starGrad.addColorStop(0, '#FFFFFF');
+                        starGrad.addColorStop(0.5, '#ffecb3'); // Gold light
+                        starGrad.addColorStop(1, '#bf953f');   // Gold dark
+
+                        ctx.fillStyle = starGrad;
+                        ctx.strokeStyle = 'rgba(255, 236, 179, 0.5)';
+                        ctx.lineWidth = 1;
+                        ctx.shadowBlur = 10;
+                        ctx.shadowColor = 'rgba(255, 236, 179, 0.5)';
+
                         ctx.beginPath();
-                        const diag = 0.707; // cos(45°) = sin(45°) ≈ 0.707
-
-                        // Top-right spike
-                        ctx.moveTo(starX + outerRadius * diag * twinkle1, starY - outerRadius * diag * twinkle1);
-                        ctx.lineTo(starX + innerRadius * 0.3, starY);
-
-                        // Bottom-right spike
-                        ctx.lineTo(starX + outerRadius * diag * twinkle2, starY + outerRadius * diag * twinkle2);
-                        ctx.lineTo(starX, starY + innerRadius * 0.3);
-
-                        // Bottom-left spike
-                        ctx.lineTo(starX - outerRadius * diag * twinkle3, starY + outerRadius * diag * twinkle3);
-                        ctx.lineTo(starX - innerRadius * 0.3, starY);
-
-                        // Top-left spike
-                        ctx.lineTo(starX - outerRadius * diag * twinkle4, starY - outerRadius * diag * twinkle4);
-                        ctx.lineTo(starX, starY - innerRadius * 0.3);
-
+                        for (let i = 0; i < 4; i++) {
+                            ctx.lineTo(starSize, 0);
+                            ctx.lineTo(innerSize, innerSize);
+                            ctx.rotate(Math.PI / 2);
+                        }
                         ctx.closePath();
-
-                        // Fill with blue comet glow
-                        ctx.fillStyle = "#e0f4ff"; // Light blue-white core
-                        ctx.shadowBlur = 30;
-                        ctx.shadowColor = "rgba(100, 180, 255, 0.95)"; // Blue glow
                         ctx.fill();
+                        ctx.stroke();
 
-                        // Second glow layer - cyan
-                        ctx.shadowBlur = 60;
-                        ctx.shadowColor = "rgba(150, 220, 255, 0.6)";
-                        ctx.fill();
-
-                        ctx.shadowBlur = 0; // Reset
+                        ctx.restore();
                     }
                 }
             }
@@ -343,6 +364,11 @@ export default function Hero() {
         return () => {
             window.removeEventListener("resize", resize);
             cancelAnimationFrame(animationId);
+
+            // Restore cursor
+            document.body.style.cursor = 'auto';
+            const customCursor = document.querySelector('.custom-cursor') as HTMLElement;
+            if (customCursor) customCursor.style.opacity = '1';
         };
     }, []);
 
