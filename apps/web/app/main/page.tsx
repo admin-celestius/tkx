@@ -1,0 +1,12 @@
+'use client';
+
+import React from 'react';
+import LandingPage from '../../components/landing/LandingPage';
+
+export default function Page() {
+    return (
+        <main>
+            <LandingPage />
+        </main>
+    );
+}
