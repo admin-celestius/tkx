@@ -35,14 +35,14 @@ const TimelineProgress = forwardRef<TimelineProgressHandle, TimelineProgressProp
 
                     if (isTarget) {
                         // ACTIVE STATE
-                        item.className = `transition-all duration-300 leading-none text-white text-5xl md:text-6xl opacity-100 font-bold`;
+                        item.className = `transition-all duration-150 leading-none text-white text-5xl md:text-6xl opacity-100 font-bold`;
                     } else {
                         // INACTIVE STATE
                         if (isMilestone) {
-                            item.className = `transition-all duration-300 leading-none text-gray-500 text-3xl opacity-40 font-normal`;
+                            item.className = `transition-all duration-150 leading-none text-gray-500 text-3xl opacity-40 font-normal`;
                         } else {
                             // Hidden padding years
-                            item.className = `transition-all duration-300 leading-none text-gray-500 text-3xl opacity-40 font-normal hidden md:block opacity-10`;
+                            item.className = `transition-all duration-150 leading-none text-gray-500 text-3xl opacity-40 font-normal hidden md:block opacity-10`;
                         }
                     }
                 });
@@ -67,7 +67,7 @@ const TimelineProgress = forwardRef<TimelineProgressHandle, TimelineProgressProp
                         const isMilestone = milestones.some(m => m.year === year);
 
                         // Initial Class Calculation
-                        let className = `transition-all duration-300 leading-none `;
+                        let className = `transition-all duration-150 leading-none `;
                         if (isActive) {
                             className += "text-white text-5xl md:text-6xl opacity-100 font-bold";
                         } else {

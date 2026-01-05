@@ -129,9 +129,9 @@ export default function BondTimeline() {
                     scrollTrigger: {
                         trigger: containerRef.current,
                         start: "top top",
-                        end: `+=${milestones.length * 100}%`,
+                        end: `+=${milestones.length * 300}%`,
                         pin: true,
-                        scrub: 1,
+                        scrub: 0.5,
                         anticipatePin: 1,
                         onUpdate: (self) => {
                             const totalProgress = self.progress * (milestones.length - 1);
@@ -224,7 +224,7 @@ export default function BondTimeline() {
                             opacity: 1,
                             duration: 1,
                             ease: "power2.out"
-                        }, startTime);
+                        }, startTime + 0.2);
 
                         // Specific Content Transitions (Grid / Slit columns)
                         if (type === "slit") {
@@ -241,20 +241,20 @@ export default function BondTimeline() {
                             // Grid IN
                             masterTl.to(cells, {
                                 opacity: 1,
-                                scale: 1.05,
-                                duration: 0.4,
-                                stagger: { amount: 0.15, grid: [10, 10], from: "random" },
-                                ease: "steps(1)"
+                                scale: 1,
+                                duration: 0.1,
+                                stagger: { amount: 0.1, grid: [10, 10], from: "random" },
+                                ease: "none"
                             }, startTime);
 
-                            // Grid OUT (reveal content underneath)
+                            // Grid OUT (Break away)
                             masterTl.to(cells, {
                                 opacity: 0,
                                 scale: 0,
-                                duration: 0.6,
-                                stagger: { amount: 0.15, grid: [10, 10], from: "random" },
-                                ease: "power2.out"
-                            }, startTime + 0.4);
+                                duration: 0.8,
+                                stagger: { amount: 0.4, grid: [10, 10], from: "random" },
+                                ease: "power2.in"
+                            }, startTime + 0.2);
                         }
                         else if (type === "liquid") {
                             const maskCircle = document.getElementById(`mask-circle-${i}`);
@@ -370,8 +370,8 @@ export default function BondTimeline() {
                             style={style}
                         >
                             {/* --- UNIFIED VISUALS (Logo + Debris) --- */}
-                            <div className="fluid-logo-container absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-80 z-40 opacity-10 mix-blend-overlay pointer-events-none">
-                                <FluidLogo fillProgress={1} baseColor={item.theme.accent} width={256} height={320} />
+                            <div className="fluid-logo-container absolute top-[48%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-80 z-[60] opacity-80 pointer-events-none">
+                                <FluidLogo fillProgress={1} baseColor={item.theme.text} width={256} height={320} />
                             </div>
 
                             <div className="parallax-debris-container absolute inset-0 z-30 pointer-events-none mix-blend-plus-lighter">
