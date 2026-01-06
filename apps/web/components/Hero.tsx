@@ -66,7 +66,7 @@ export default function Hero() {
                 opacity = Math.random() * 0.5 + 0.3;
             } else {
                 // Foreground Particles (Active) - 15%
-                baseSpeedY = -(Math.random() * 0.6 + 0.3); // Visible movement but still space-like slow
+                baseSpeedY = -(Math.random() * 1.0 + 0.8); // Faster vertical movement
                 size = Math.random() * 3 + 1.5; // Larger
                 opacity = Math.random() * 0.6 + 0.4;
             }
