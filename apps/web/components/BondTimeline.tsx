@@ -17,7 +17,6 @@ if (typeof window !== "undefined") {
 }
 
 // DEFINING THE ERA DATA & TRANSITIONS
-// Updated to Use ONLY: Circle, Slit, Pixel, Liquid per user request
 const milestones: Milestone[] = [
     {
         year: "2016",
@@ -49,7 +48,7 @@ const milestones: Milestone[] = [
         description: "Entropy increases as the system expands.",
         image: "https://images.unsplash.com/photo-1550684848-fac1c5b4e853?q=80&w=2000&auto=format&fit=crop",
         theme: { bg: "#4c0519", text: "#fda4af", accent: "#fb7185", font: "font-black" },
-        transition: "pixel"
+        transition: "liquid"
     },
     {
         year: "2020",
@@ -73,7 +72,7 @@ const milestones: Milestone[] = [
         description: "Grid systems realigning. The network heals.",
         image: "https://images.unsplash.com/photo-1550684847-75bdda21cc95?q=80&w=2000&auto=format&fit=crop",
         theme: { bg: "#2a1b0c", text: "#facc15", accent: "#ca8a04", font: "font-sans" },
-        transition: "slit"
+        transition: "circle"
     },
     {
         year: "2023",
@@ -89,7 +88,7 @@ const milestones: Milestone[] = [
         description: "Around the World.",
         image: "",
         theme: { bg: "#e0e0e0", text: "#000000", accent: "#000000", font: "font-sans" },
-        transition: "liquid"
+        transition: "slit"
     },
     {
         year: "2025",
@@ -97,7 +96,7 @@ const milestones: Milestone[] = [
         description: "Rhythm of Life.",
         image: "",
         theme: { bg: "#000000", text: "#ffffff", accent: "#ffffff", font: "font-mono" },
-        transition: "circle"
+        transition: "pixel"
     },
     {
         year: "2026",
@@ -129,12 +128,13 @@ export default function BondTimeline() {
                     scrollTrigger: {
                         trigger: containerRef.current,
                         start: "top top",
-                        end: `+=${milestones.length * 300}%`,
+                        end: `+=${milestones.length * 270}%`, // Reduced from 300% (10% Faster Scroll)
                         pin: true,
-                        scrub: 0.5,
+                        scrub: 1,
                         anticipatePin: 1,
                         onUpdate: (self) => {
                             const totalProgress = self.progress * (milestones.length - 1);
+                            // SYNC FIX: Switch Year when transition is ~50% done (Visual Dominance)
                             const idx = Math.round(totalProgress);
 
                             if (progressRef.current && milestones[idx]) {
@@ -165,16 +165,15 @@ export default function BondTimeline() {
                     }
 
                     // Prepare Parallax Elements
-                    const wrapper = panel.querySelector(".year-content-wrapper");
+                    const wrappers = panel.querySelectorAll(".year-content-wrapper"); // SELECT ALL (Fixes Slit bug)
                     const logo = panel.querySelector(".fluid-logo-container");
                     const debris = panel.querySelector(".parallax-debris-container");
-                    const parallaxElements = [wrapper, logo, debris].filter(Boolean);
 
+                    // Initial State: Hidden & Offset
                     if (isFirst) {
-                        gsap.set(parallaxElements, { yPercent: 0, opacity: 1 });
+                        gsap.set([wrappers, logo, debris], { yPercent: 0, opacity: 1 });
                     } else {
-                        // Start lower and invisible
-                        gsap.set(parallaxElements, { yPercent: 40, opacity: 0 });
+                        gsap.set([wrappers, logo, debris], { yPercent: 40, opacity: 0 });
                     }
 
                     // Reset Transition Specifics
@@ -199,94 +198,211 @@ export default function BondTimeline() {
                     }
                 });
 
-                // --- BUILD TIMELINE LIFECYCLE ---
+                // --- BUILD TIMELINE LIFECYCLE (Time Slot Architecture) ---
                 panels.forEach((panel, i) => {
                     if (!panel) return;
 
-                    const type = milestones[i].transition;
-                    const wrapper = panel.querySelector(".year-content-wrapper");
+                    // TARGETS: Text/Logo (Content) separate from Background
+                    const wrappers = panel.querySelectorAll(".year-content-wrapper");
                     const logo = panel.querySelector(".fluid-logo-container");
                     const debris = panel.querySelector(".parallax-debris-container");
-                    // Combine targets for unified parallax
-                    const parallaxTargets = [wrapper, logo, debris].filter(Boolean);
 
-                    const startTime = i - 1;
-                    const endTime = i;
+                    const contentTargets = [...Array.from(wrappers)].filter(Boolean); // REMOVED LOGO from Parallax
+                    const debrisTarget = debris;
 
-                    // 1. ENTRY (Transition In) - Only for i > 0
-                    if (i > 0) {
-                        // Reveal Panel Container (Parent)
-                        masterTl.set(panel, { autoAlpha: 1 }, startTime);
+                    const enterStartTime = i - 1;
+                    const exitStartTime = i;
 
-                        // Content Parallax Entry (Float Up + Fade In)
-                        masterTl.to(parallaxTargets, {
-                            yPercent: 0,
-                            opacity: 1,
-                            duration: 1,
-                            ease: "power2.out"
-                        }, startTime + 0.2);
+                    // --- TIME SLOT LOGIC ---
+                    // 0.0 - 0.6: Text Exit (Old)
+                    // 0.2 - 0.6: Text Entry (New) -> OVERLAP ACTIVE
+                    // "As it ghosts out, next page comes"
 
-                        // Specific Content Transitions (Grid / Slit columns)
+                    // --- TIME SLOT LOGIC (SPEED UP 35%) ---
+                    // 0.0 - 0.4: Text Exit (Old) [Was 0.6]
+                    // 0.2 - 0.6: Text Entry (New) [Still overlaps]
+
+                    const SLOT_ENTRY_START = enterStartTime + 0.2;
+                    const SLOT_EXIT_START = exitStartTime;
+                    const TRANSITION_DUR = 0.31; // Reduced 10% (0.35 -> 0.31)
+                    const PARALLAX_DUR = 2.0;
+
+                    // --- SYMMETRIC PARALLAX LOGIC ---
+                    // "Neatly come together on the middle": Forced Symmetry (From = -To).
+                    // "Distinct Styles": Pure Axis movements.
+
+                    let pConfig = { from: { yPercent: 0, xPercent: 0, scale: 1, rotation: 0 }, to: { yPercent: 0, xPercent: 0, scale: 1, rotation: 0 } };
+
+                    if (i <= 2) {
+                        // PHASE 1: ASCENT (Pure Vertical)
+                        // 25% Range. Symmetric.
+                        pConfig.from = { yPercent: 25, xPercent: 0, scale: 1, rotation: 0 };
+                        pConfig.to = { yPercent: -25, xPercent: 0, scale: 1, rotation: 0 };
+                    }
+                    else if (i <= 5) {
+                        // PHASE 2: SHIFT (Pure Horizontal)
+                        // 20% Range. Symmetric.
+                        pConfig.from = { yPercent: 0, xPercent: 20, scale: 1, rotation: 0 };
+                        pConfig.to = { yPercent: 0, xPercent: -20, scale: 1, rotation: 0 };
+                    }
+                    else if (i <= 8) {
+                        // PHASE 3: DEPTH (Pure Scale)
+                        // 0.8 -> 1.2. Symmetric around 1.0.
+                        pConfig.from = { yPercent: 0, xPercent: 0, scale: 0.8, rotation: 0 };
+                        pConfig.to = { yPercent: 0, xPercent: 0, scale: 1.2, rotation: 0 };
+                    }
+                    else {
+                        // PHASE 4: ZENITH (Vertical Return)
+                        pConfig.from = { yPercent: 25, xPercent: 0, scale: 1, rotation: 0 };
+                        pConfig.to = { yPercent: -25, xPercent: 0, scale: 1, rotation: 0 };
+                    }
+
+                    if (i === 0) {
+                        // GENESIS
+                        masterTl.fromTo(contentTargets,
+                            { yPercent: 0, xPercent: 0, scale: 1, rotation: 0 },
+                            { yPercent: -50, duration: 1, ease: "none" },
+                            0
+                        );
+                        if (debrisTarget) masterTl.fromTo(debrisTarget, { yPercent: 0 }, { yPercent: -100, duration: 1, ease: "none" }, 0);
+
+                        // TEXT FADE ONLY
+                        masterTl.to(contentTargets, { opacity: 0, duration: 0.4, ease: "power2.in" }, 0);
+                        if (debrisTarget) masterTl.to(debrisTarget, { opacity: 0, duration: 0.4, ease: "power2.in" }, 0);
+
+                    } else {
+                        // ALL OTHER PANELS
+
+                        // 1. CONTENT PARALLAX (DOCKING LOGIC)
+                        // "Should stop when everything aligns perfectly"
+                        // 0-45%: Move In. 45-55%: DOCK (Center). 55-100%: Move Out.
+                        masterTl.to(contentTargets, {
+                            keyframes: {
+                                "0%": { ...pConfig.from as any },
+                                "45%": { yPercent: 0, xPercent: 0, scale: 1, rotation: 0 }, // DOCK
+                                "55%": { yPercent: 0, xPercent: 0, scale: 1, rotation: 0 }, // HOLD
+                                "100%": { ...pConfig.to as any }
+                            },
+                            duration: PARALLAX_DUR,
+                            ease: "none"
+                        }, enterStartTime);
+
+                        // 1.5 DEBRIS PARALLAX (Robus Logic)
+                        // Pre-calculate values to avoid runtime errors in Keyframes
+                        if (debrisTarget) {
+                            const dMult = 1.5;
+                            const dFromY = (pConfig.from as any).yPercent * dMult;
+                            const dFromX = (pConfig.from as any).xPercent * dMult;
+                            const dFromS = (pConfig.from as any).scale !== 1 ? (pConfig.from as any).scale * 0.5 : 1; // Opposite scale (Depth)
+
+                            const dToY = (pConfig.to as any).yPercent * dMult;
+                            const dToX = (pConfig.to as any).xPercent * dMult;
+                            const dToS = (pConfig.to as any).scale !== 1 ? (pConfig.to as any).scale * 1.5 : 1; // Exaggerated scale
+
+                            masterTl.to(debrisTarget, {
+                                keyframes: {
+                                    "0%": { yPercent: dFromY, xPercent: dFromX, scale: dFromS },
+                                    "45%": { yPercent: 0, xPercent: 0, scale: 1 },
+                                    "55%": { yPercent: 0, xPercent: 0, scale: 1 },
+                                    "100%": { yPercent: dToY, xPercent: dToX, scale: dToS }
+                                },
+                                duration: PARALLAX_DUR,
+                                ease: "none"
+                            }, enterStartTime);
+                        }
+
+                        // 2. VISIBILITY (Text & Debris Fade In - Fast 0.2s)
+                        masterTl.fromTo([contentTargets, debrisTarget, logo], // Added Logo here for Fade Only
+                            { opacity: 0 },
+                            { opacity: 1, duration: 0.2, ease: "power2.out" },
+                            SLOT_ENTRY_START
+                        );
+
+                        // 3. BACKGROUND / ENTRY TRANSITION
+                        const type = milestones[i].transition;
+
                         if (type === "slit") {
                             const cols = panel.querySelectorAll(".slit-col");
-                            masterTl.to(cols, {
-                                yPercent: 0,
-                                duration: 1,
-                                ease: "power4.inOut",
-                                stagger: { amount: 0.4, from: "edges" }
-                            }, startTime);
+                            if (cols.length) {
+                                masterTl.fromTo(cols,
+                                    { yPercent: (index) => index % 2 === 0 ? 100 : -100 },
+                                    { yPercent: 0, duration: TRANSITION_DUR, ease: "power4.inOut", stagger: { amount: 0.15, from: "edges" } },
+                                    SLOT_ENTRY_START
+                                );
+                            }
                         }
                         else if (type === "pixel") {
                             const cells = panel.querySelectorAll(".pixel-cell");
-                            // Grid IN
-                            masterTl.to(cells, {
-                                opacity: 1,
-                                scale: 1,
-                                duration: 0.1,
-                                stagger: { amount: 0.1, grid: [10, 10], from: "random" },
-                                ease: "none"
-                            }, startTime);
-
-                            // Grid OUT (Break away)
-                            masterTl.to(cells, {
-                                opacity: 0,
-                                scale: 0,
-                                duration: 0.8,
-                                stagger: { amount: 0.4, grid: [10, 10], from: "random" },
-                                ease: "power2.in"
-                            }, startTime + 0.2);
+                            if (cells.length) {
+                                // REVERSE: Start SOLID (1.5 scale covers gaps) -> Shrink/Fade OUT (Reveal Page)
+                                masterTl.fromTo(cells,
+                                    { opacity: 1, scale: 1.5 },
+                                    { opacity: 0, scale: 0, duration: TRANSITION_DUR, stagger: { amount: 0.1, grid: [10, 10], from: "random" }, ease: "power2.out" },
+                                    SLOT_ENTRY_START
+                                );
+                            }
                         }
                         else if (type === "liquid") {
                             const maskCircle = document.getElementById(`mask-circle-${i}`);
                             if (maskCircle) {
-                                masterTl.to(maskCircle, {
-                                    attr: { r: 2500 },
-                                    duration: 1,
-                                    ease: "power1.inOut"
-                                }, startTime);
+                                masterTl.fromTo(maskCircle,
+                                    { attr: { r: 0 } },
+                                    { attr: { r: 2500 }, duration: TRANSITION_DUR + 0.2, ease: "power1.inOut" },
+                                    SLOT_ENTRY_START
+                                );
                             }
                         }
                         else {
-                            // Circle
-                            masterTl.to(panel, {
-                                clipPath: "circle(150% at 50% 50%)",
-                                duration: 1,
-                                ease: "power1.inOut"
-                            }, startTime);
-                        }
-                    }
+                            // Circle default
+                            masterTl.fromTo(panel,
+                                { clipPath: "circle(0% at 50% 50%)" },
+                                { clipPath: "circle(150% at 50% 50%)", duration: TRANSITION_DUR + 0.2, ease: "power4.in" }, // Power4.in keeps it small/center longer
+                                SLOT_ENTRY_START
+                            );
 
-                    // 2. EXIT (Transition Out) - Active for all panels except the very last one
-                    if (i < milestones.length - 1) {
-                        const nextStartTime = endTime;
-                        // Move content UP and Fade OUT as the next panel arrives
-                        masterTl.to(parallaxTargets, {
-                            yPercent: -60,      // Move UP significantly
-                            opacity: 0,         // Fade Out completely
-                            scale: 0.85,        // Shrink slightly
-                            duration: 1,
-                            ease: "power2.in"
-                        }, nextStartTime);
+                            // SHOCKWAVE RING & BURST ANIMATION
+                            const ring = panel.querySelector(".shockwave-ring");
+                            const burst = panel.querySelector(".color-burst");
+
+                            if (ring) {
+                                masterTl.fromTo(ring,
+                                    { scale: 0, opacity: 1, borderWidth: "50px" },
+                                    { scale: 1.5, opacity: 0, borderWidth: "0px", duration: TRANSITION_DUR + 0.5, ease: "power1.out" },
+                                    SLOT_ENTRY_START
+                                );
+                            }
+                            if (burst) {
+                                masterTl.fromTo(burst,
+                                    { opacity: 0.5 }, // Start visible (Flash of Previous Color)
+                                    { opacity: 0, duration: TRANSITION_DUR + 0.3, ease: "power2.out" },
+                                    SLOT_ENTRY_START
+                                );
+                            }
+                        }
+
+                        // 4. EXIT (Faster 0.4s)
+                        if (i < milestones.length - 1) {
+                            masterTl.to([contentTargets, logo], { // Added Logo to Exit Fade
+                                opacity: 0,
+                                duration: 0.4,
+                                ease: "power2.in"
+                            }, SLOT_EXIT_START);
+                            if (debrisTarget) {
+                                masterTl.to(debrisTarget, {
+                                    opacity: 0,
+                                    duration: 0.4,
+                                    ease: "power2.in"
+                                }, SLOT_EXIT_START);
+                            }
+                        }
+
+                        // GHOSTING FIX: Fade Panel IN instead of Setting (Allows Opacity Overlap)
+                        // If we just 'set', the background covers the previous ghost.
+                        masterTl.fromTo(panel,
+                            { autoAlpha: 0 },
+                            { autoAlpha: 1, duration: TRANSITION_DUR, ease: "power2.inOut" },
+                            SLOT_ENTRY_START
+                        );
                     }
                 });
 
@@ -344,16 +460,17 @@ export default function BondTimeline() {
                     const isSlit = type === "slit";
                     const isPixel = type === "pixel";
                     const isLiquid = type === "liquid";
+                    const isCircle = type === "circle";
 
-                    // CRITICAL VISIBILITY CSS LOGIC
-                    // 1. Non-first items start hidden/invisible (prevents 2016-2022 blank issue)
-                    // 2. Slit/Pixel panels are transparent (prevents blocking during transition)
+                    // LOGIC: Use CURRENT text color (Incoming Theme) for Burst/Ring
+                    const burstColor = item.theme.text;
 
+                    // VISIBILITY ROBUSTNESS
+                    // Reverted Radial Gradient. Using Overlay instead for "Previous Color" effect.
                     const style: React.CSSProperties = {
                         zIndex: i + 1,
-                        backgroundColor: (isSlit || isPixel) ? "transparent" : item.theme.bg,
+                        background: (isSlit || isPixel) ? "transparent" : item.theme.bg,
                         color: item.theme.text,
-                        visibility: i === 0 ? 'visible' : 'hidden',
                         opacity: i === 0 ? 1 : 0
                     };
 
@@ -369,12 +486,14 @@ export default function BondTimeline() {
                             className="absolute inset-0 w-full h-full flex items-center justify-center overflow-hidden"
                             style={style}
                         >
-                            {/* --- UNIFIED VISUALS (Logo + Debris) --- */}
-                            <div className="fluid-logo-container absolute top-[48%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-80 z-[60] opacity-80 pointer-events-none">
+                            {/* --- UNIFIED VISUALS --- */}
+                            {/* Logo Lifted: top-[30%] (User requested significant upward shift) */}
+                            <div className="fluid-logo-container absolute top-[30%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-80 z-[60] opacity-80 pointer-events-none">
                                 <FluidLogo fillProgress={1} baseColor={item.theme.text} width={256} height={320} />
                             </div>
 
-                            <div className="parallax-debris-container absolute inset-0 z-30 pointer-events-none mix-blend-plus-lighter">
+                            {/* DEBRIS VISIBILITY FIX: Z-Index 100 + No Blend Mode */}
+                            <div className="parallax-debris-container absolute inset-0 z-[100] pointer-events-none">
                                 <ParallaxDebris color={item.theme.accent} count={6} seed={i} />
                             </div>
 
@@ -392,6 +511,7 @@ export default function BondTimeline() {
                                                 className="absolute top-0 h-full w-[100vw]"
                                                 style={{ left: `-${colIndex * 20}vw` }}
                                             >
+                                                {/* REMOVED INNER BG HACK: Restoring original noise/gradients for Pixel/Slit */}
                                                 <div className="year-content-wrapper relative w-full h-full flex items-center justify-center p-8">
                                                     <YearSection item={item} />
                                                 </div>
@@ -402,12 +522,34 @@ export default function BondTimeline() {
                             ) : (
                                 /* --- STANDARD LAYOUT --- */
                                 <div className="relative w-full h-full flex items-center justify-center">
+                                    {/* REMOVED INNER BG HACK */}
                                     <div className="year-content-wrapper relative z-20 w-full h-full flex items-center justify-center">
                                         <YearSection item={item} />
                                     </div>
 
                                     {isPixel && (
-                                        <PixelGridOverlay active={true} color={item.theme.bg} />
+                                        <PixelGridOverlay active={true} color={item.theme.text} />
+                                    )}
+
+                                    {/* COLOR BURST & SHOCKWAVE (For Circle ONLY, and NOT Genesis) */}
+                                    {isCircle && i > 0 && (
+                                        <>
+                                            {/* COLOR BURST */}
+                                            <div
+                                                className="color-burst absolute inset-0 z-0 pointer-events-none"
+                                                style={{ backgroundColor: burstColor }}
+                                            />
+                                            {/* SHOCKWAVE RING */}
+                                            <div
+                                                className="shockwave-ring absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full z-10 pointer-events-none"
+                                                style={{
+                                                    width: '100vmax',
+                                                    height: '100vmax',
+                                                    borderColor: burstColor,
+                                                    borderStyle: 'solid'
+                                                }}
+                                            />
+                                        </>
                                     )}
                                 </div>
                             )}

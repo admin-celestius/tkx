@@ -12,7 +12,7 @@ export default function PixelGridOverlay({ active, color }: PixelGridProps) {
     const blocks = useMemo(() => Array.from({ length: 100 }), []);
 
     return (
-        <div className="absolute inset-0 pointer-events-none flex flex-wrap pixel-grid-container px-0 py-0">
+        <div className="absolute inset-0 w-full h-full pointer-events-none flex flex-wrap pixel-grid-container px-0 py-0 z-[100]">
             {blocks.map((_, i) => (
                 <div
                     key={i}

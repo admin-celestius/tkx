@@ -67,10 +67,10 @@ export default function ParallaxDebris({ color, count = 10, seed = 1 }: Parallax
                         top: s.top,
                         left: s.left,
                         transform: `rotate(${s.rotate}deg)`,
-                        opacity: s.opacity,
+                        opacity: 0.3 + s.opacity * 0.4, // TRANSLUCENT (0.3 to 0.7)
                         borderRadius: s.borderRadius,
                         clipPath: s.clipPath,
-                        filter: "brightness(0.6)" // "Darker shade"
+                        filter: "brightness(0.7)" // Darker shade
                     }}
                 />
             ))}

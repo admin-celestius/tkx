@@ -10,7 +10,7 @@ const NavBar = () => {
         <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-10 py-6 mix-blend-difference text-white">
             {/* Left: Brand */}
             <div className="flex flex-col leading-none select-none">
-                <span className="text-2xl font-black tracking-widest font-sans">TAKSHASHILA</span>
+                {/* <span className="text-2xl font-black tracking-widest font-sans">TAKSHASHILA</span> */}
                 <span className="text-xs tracking-[0.3em] opacity-60 font-light">THE TIMELINE</span>
             </div>
 
