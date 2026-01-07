@@ -134,8 +134,8 @@ export default function BondTimeline() {
                         anticipatePin: 1,
                         onUpdate: (self) => {
                             const totalProgress = self.progress * (milestones.length - 1);
-                            // SYNC FIX: Switch Year when transition is ~50% done (Visual Dominance)
-                            const idx = Math.round(totalProgress);
+                            // SYNC FIX: Switch at 42% (User Requested "Very slow, maybe do 42%")
+                            const idx = Math.floor(totalProgress + 0.58);
 
                             if (progressRef.current && milestones[idx]) {
                                 progressRef.current.setVisualYear(
@@ -266,8 +266,8 @@ export default function BondTimeline() {
                         );
                         if (debrisTarget) masterTl.fromTo(debrisTarget, { yPercent: 0 }, { yPercent: -100, duration: 1, ease: "none" }, 0);
 
-                        // TEXT FADE ONLY
-                        masterTl.to(contentTargets, { opacity: 0, duration: 0.4, ease: "power2.in" }, 0);
+                        // TEXT FADE ONLY (Added Logo)
+                        masterTl.to([contentTargets, logo], { opacity: 0, duration: 0.4, ease: "power2.in" }, 0);
                         if (debrisTarget) masterTl.to(debrisTarget, { opacity: 0, duration: 0.4, ease: "power2.in" }, 0);
 
                     } else {
@@ -291,13 +291,20 @@ export default function BondTimeline() {
                         // Pre-calculate values to avoid runtime errors in Keyframes
                         if (debrisTarget) {
                             const dMult = 1.5;
-                            const dFromY = (pConfig.from as any).yPercent * dMult;
-                            const dFromX = (pConfig.from as any).xPercent * dMult;
-                            const dFromS = (pConfig.from as any).scale !== 1 ? (pConfig.from as any).scale * 0.5 : 1; // Opposite scale (Depth)
+                            // FORCE VERTICAL DRIFT: If Text has no Y movement (Phase 2/3), force Debris to drift Y anyway
+                            const baseY = (pConfig.from as any).yPercent;
+                            const forceY = baseY === 0 ? 30 : baseY; // If 0, use 30% drift
 
-                            const dToY = (pConfig.to as any).yPercent * dMult;
+                            const dFromY = forceY * dMult;
+                            const dFromX = (pConfig.from as any).xPercent * dMult;
+                            const dFromS = (pConfig.from as any).scale !== 1 ? (pConfig.from as any).scale * 0.5 : 1;
+
+                            const baseToY = (pConfig.to as any).yPercent;
+                            const forceToY = baseToY === 0 ? -30 : baseToY; // If 0, use -30% drift
+
+                            const dToY = forceToY * dMult;
                             const dToX = (pConfig.to as any).xPercent * dMult;
-                            const dToS = (pConfig.to as any).scale !== 1 ? (pConfig.to as any).scale * 1.5 : 1; // Exaggerated scale
+                            const dToS = (pConfig.to as any).scale !== 1 ? (pConfig.to as any).scale * 1.5 : 1;
 
                             masterTl.to(debrisTarget, {
                                 keyframes: {
@@ -487,8 +494,8 @@ export default function BondTimeline() {
                             style={style}
                         >
                             {/* --- UNIFIED VISUALS --- */}
-                            {/* Logo Lifted: top-[30%] (User requested significant upward shift) */}
-                            <div className="fluid-logo-container absolute top-[30%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-80 z-[60] opacity-80 pointer-events-none">
+                            {/* Logo Lifted: top-[20%] (User requested "do top 20%") */}
+                            <div className="fluid-logo-container absolute top-[20%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-80 z-[60] opacity-80 pointer-events-none">
                                 <FluidLogo fillProgress={1} baseColor={item.theme.text} width={256} height={320} />
                             </div>
 
