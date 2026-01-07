@@ -2,7 +2,6 @@
 
 import React, { useEffect, useRef } from 'react';
 
-// interface Particle moved outside
 interface Particle {
     x: number;
     y: number;
@@ -35,20 +34,12 @@ const CometCursor = () => {
         // State
         const pos = { x: width / 2, y: height / 2 };
         const mouse = { x: width / 2, y: height / 2 };
-        const velocity = { x: 0, y: 0 };
 
-        // Physics - Stabilized Drift
-        const drag = 0.15; // Increased drag to stop "shaking/oscillating" (sacking)
-        const stiffness = 0.12; // Slightly softer spring
+        // Track previous position for raw velocity calculation (for particles only)
+        const lastPos = { x: width / 2, y: height / 2 };
 
         // Visual State
-        let currentScale = 1;
         let currentRotation = Math.PI / 4;
-
-        // Shake Detection
-        let shakeCount = 0;
-        let lastVxSign = 0;
-        let shakeResetTimer: NodeJS.Timeout;
 
         // Particles 
         const particles: Particle[] = [];
@@ -65,8 +56,27 @@ const CometCursor = () => {
             mouse.y = e.clientY;
         };
 
+        // Hover State
+        let isHovering = false;
+
+        const checkHover = (e: MouseEvent) => {
+            const target = e.target as HTMLElement;
+            isHovering = !!target.closest('a, button, input, select, textarea, [role="button"], .cursor-hover');
+        };
+
+        const onMouseOut = (e: MouseEvent) => {
+            const related = e.relatedTarget as HTMLElement;
+            if (!related) {
+                isHovering = false;
+            } else {
+                isHovering = !!related.closest('a, button, input, select, textarea, [role="button"], .cursor-hover');
+            }
+        };
+
         window.addEventListener('resize', onResize);
         window.addEventListener('mousemove', onMouseMove);
+        window.addEventListener('mouseover', checkHover);
+        window.addEventListener('mouseout', onMouseOut);
         onResize();
 
         const random = (min: number, max: number) => Math.random() * (max - min) + min;
@@ -75,61 +85,30 @@ const CometCursor = () => {
         const render = () => {
             ctx.clearRect(0, 0, width, height);
 
-            // 1. Physics Update
-            const dx = mouse.x - pos.x;
-            const dy = mouse.y - pos.y;
+            // 1. Strict Position Lock (No Physics/Smoothing)
+            pos.x = mouse.x;
+            pos.y = mouse.y;
 
-            velocity.x += dx * stiffness;
-            velocity.y += dy * stiffness;
-            velocity.x *= (1 - drag);
-            velocity.y *= (1 - drag);
+            // Calculate raw velocity for particles
+            const vx = pos.x - lastPos.x;
+            const vy = pos.y - lastPos.y;
+            const speed = Math.hypot(vx, vy);
 
-            pos.x += velocity.x;
-            pos.y += velocity.y;
+            lastPos.x = pos.x;
+            lastPos.y = pos.y;
 
-            // 2. Logic: Shake Detection (Left/Right)
-            const vxSign = Math.sign(velocity.x);
-            if (Math.abs(velocity.x) > 5 && vxSign !== 0 && vxSign !== lastVxSign) {
-                shakeCount++;
-                lastVxSign = vxSign;
+            // 2. Strict Scale & Rotation (No Smoothing)
+            // Scale: 2.2 on hover, 1.0 otherwise. No transition.
+            const currentScale = isHovering ? 1.6 : 1.0;
 
-                clearTimeout(shakeResetTimer);
-                shakeResetTimer = setTimeout(() => {
-                    shakeCount = 0;
-                }, 800);
-            }
-
-            // Calculate Target Scale
-            let targetScale = 1;
-            const speed = Math.hypot(velocity.x, velocity.y);
-
-            // "Star max to half the screen"
-            // "Star max to half the screen" only after "fast moves" (Reduced threshold)
-            const maxDimension = Math.min(width, height) / 2;
-            const maxScaleLimit = maxDimension / 12;
-
-            // Reduced threshold from 30 -> 12 per user request ("reduce mouse sacking" -> requiring less shaking)
-            if (shakeCount > 12) {
-                targetScale = maxScaleLimit;
-            } else {
-                // Reduced growth and cap per user request ("reduce of the mouse" -> smaller cursor)
-                targetScale = 1 + (speed * 0.02); // Reduced from 0.05
-                targetScale = Math.min(targetScale, 1.5); // Reduced cap from 3 -> 1.5
-            }
-
-            // Slower growth for smoothness (User requested "grow slow")
-            currentScale += (targetScale - currentScale) * 0.01;
-
-            // Spin based on speed
-            const rotationSpeed = 0.01;
-            const targetRotation = Math.PI / 4 + (velocity.x * 0.005);
-
-            currentRotation += (targetRotation - currentRotation) * 0.1;
+            // Rotation: Constant slow spin for visual flair, but position is locked.
+            // Increased speed slightly on hover.
+            currentRotation += isHovering ? 0.06 : 0.02;
 
             // 3. Emitters
-
-            // A. Gold Dust (Always active)
-            const dustCount = 1 + Math.floor(speed * 0.5);
+            // A. Gold Dust
+            // Spawn based on movement speed
+            const dustCount = Math.floor(speed * 0.5);
             for (let i = 0; i < dustCount; i++) {
                 const r = 20 * currentScale;
                 const angle = Math.random() * Math.PI * 2;
@@ -137,32 +116,30 @@ const CometCursor = () => {
                 particles.push({
                     x: pos.x + Math.cos(angle) * dist,
                     y: pos.y + Math.sin(angle) * dist,
-                    vx: (Math.random() - 0.5) * 0.5 - (velocity.x * 0.05),
-                    vy: (Math.random() - 0.5) * 0.5 - (velocity.y * 0.05),
+                    vx: (Math.random() - 0.5) * 0.5, // Drift randomly
+                    vy: (Math.random() - 0.5) * 0.5,
                     life: 1,
                     maxLife: 1,
                     size: random(0.5, 1.5),
                     alpha: random(0.3, 0.8),
-                    decay: random(0.02, 0.05),
+                    decay: random(0.05, 0.1), // Die faster
                     type: 'dust',
                     color: '255, 236, 179'
                 });
             }
 
-            // B. Stone Speckles removed (was hover only)
-
-            // C. Grey Smoke (Fast move only)
-            if (speed > 4 && Math.random() < 0.15) {
+            // B. Grey Smoke
+            if (speed > 4 && Math.random() < 0.1) {
                 particles.push({
                     x: pos.x + random(-10, 10),
                     y: pos.y + random(-10, 10),
-                    vx: -velocity.x * 0.05 + random(-0.2, 0.2),
-                    vy: -velocity.y * 0.05 + random(-0.2, 0.2),
+                    vx: -vx * 0.1 + random(-0.2, 0.2), // Slight trail effect
+                    vy: -vy * 0.1 + random(-0.2, 0.2),
                     life: 1,
                     maxLife: 1,
                     size: random(15, 30),
                     alpha: 0.08,
-                    decay: random(0.015, 0.03),
+                    decay: random(0.02, 0.04),
                     type: 'smoke',
                     color: '120, 120, 120'
                 });
@@ -173,8 +150,8 @@ const CometCursor = () => {
             // A. Surround Gold Light
             ctx.globalCompositeOperation = 'screen';
             const glowRadius = 30 * currentScale;
+            // Immediate drawing, no interpolation
             const ambientGrad = ctx.createRadialGradient(pos.x, pos.y, 0, pos.x, pos.y, glowRadius);
-            // Brighten slightly on hover (removed)
             const glowOpacity = 0.12;
             ambientGrad.addColorStop(0, `rgba(255, 236, 179, ${glowOpacity})`);
             ambientGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
@@ -210,18 +187,7 @@ const CometCursor = () => {
                     ctx.arc(p.x, p.y, currentSize, 0, Math.PI * 2);
                     ctx.fill();
 
-                } else if (p.type === 'stone') {
-                    // Stone Effect - Solid, rotating squares/speckles
-                    ctx.globalCompositeOperation = 'source-over';
-                    ctx.save();
-                    ctx.translate(p.x, p.y);
-                    ctx.rotate((p.rotation || 0) + p.life * 5); // Tumble
-                    ctx.fillStyle = `rgba(${p.color}, ${p.life})`;
-                    ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size); // Square speckle
-                    ctx.restore();
-
-                } else {
-                    // Dust
+                } else if (p.type === 'dust') {
                     ctx.globalCompositeOperation = 'lighter';
                     ctx.fillStyle = `rgba(${p.color}, ${p.alpha * p.life})`;
                     ctx.beginPath();
@@ -248,8 +214,6 @@ const CometCursor = () => {
             ctx.fillStyle = starGrad;
             ctx.strokeStyle = 'rgba(255, 236, 179, 0.5)';
             ctx.lineWidth = 1;
-
-            // Blur for polished effect
             ctx.shadowBlur = 10;
             ctx.shadowColor = 'rgba(255, 236, 179, 0.5)';
 
@@ -272,9 +236,10 @@ const CometCursor = () => {
 
         return () => {
             cancelAnimationFrame(loop);
-            clearTimeout(shakeResetTimer);
             window.removeEventListener('resize', onResize);
             window.removeEventListener('mousemove', onMouseMove);
+            window.removeEventListener('mouseover', checkHover);
+            window.removeEventListener('mouseout', onMouseOut);
         };
     }, []);
 
