@@ -230,11 +230,11 @@ function HybridXLoader({ onComplete }: { onComplete?: () => void }) {
                     <svg width="100%" height="100%" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
                         <defs>
                             <linearGradient id="goldGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                                <stop offset="0%" style={{ stopColor: "#C6A664", stopOpacity: 1 }} />
-                                <stop offset="30%" style={{ stopColor: "#F2E2A8", stopOpacity: 1 }} />
-                                <stop offset="50%" style={{ stopColor: "#C6A664", stopOpacity: 1 }} />
-                                <stop offset="80%" style={{ stopColor: "#917232", stopOpacity: 1 }} />
-                                <stop offset="100%" style={{ stopColor: "#7A5C1F", stopOpacity: 1 }} />
+                                <stop offset="0%" stop-color="#785A14" />
+
+                                <stop offset="50%" stop-color="#F5D76E" />
+
+                                <stop offset="100%" stop-color="#B98C23" />
                             </linearGradient>
                             <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
                                 <feGaussianBlur in="SourceAlpha" stdDeviation="2" />
