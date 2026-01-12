@@ -1,10 +1,27 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import BentoGallery from "@/components/collage/BentoBox";
 
 export default function NewTheoryPage() {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const [showShootingStar, setShowShootingStar] = useState(false);
+    const [currentIteration, setCurrentIteration] = useState(0); // 0-8 for 9 iterations
+    const [currentColor, setCurrentColor] = useState(0); // Index into colorPalette
+    const [cameraShift, setCameraShift] = useState<'left' | 'right' | 'none'>('none'); // Camera shift direction
+
+    // Color palette for 9 iterations
+    const colorPalette = [
+        { name: 'gold', head: ['#FFFFFF', '#ffecb3', '#bf953f'], trail: 'rgba(255, 215, 0, 0.8)', overlay: 'rgba(255, 215, 0, 0.08)' },
+        { name: 'silver', head: ['#FFFFFF', '#E8E8E8', '#C0C0C0'], trail: 'rgba(192, 192, 192, 0.8)', overlay: 'rgba(192, 192, 192, 0.08)' },
+        { name: 'blue', head: ['#FFFFFF', '#B3D9FF', '#4A90E2'], trail: 'rgba(74, 144, 226, 0.8)', overlay: 'rgba(74, 144, 226, 0.08)' },
+        { name: 'purple', head: ['#FFFFFF', '#E6CCFF', '#9B59B6'], trail: 'rgba(155, 89, 182, 0.8)', overlay: 'rgba(155, 89, 182, 0.08)' },
+        { name: 'red', head: ['#FFFFFF', '#FFB3B3', '#E74C3C'], trail: 'rgba(231, 76, 60, 0.8)', overlay: 'rgba(231, 76, 60, 0.08)' },
+        { name: 'green', head: ['#FFFFFF', '#B3FFB3', '#2ECC71'], trail: 'rgba(46, 204, 113, 0.8)', overlay: 'rgba(46, 204, 113, 0.08)' },
+        { name: 'orange', head: ['#FFFFFF', '#FFD9B3', '#E67E22'], trail: 'rgba(230, 126, 34, 0.8)', overlay: 'rgba(230, 126, 34, 0.08)' },
+        { name: 'pink', head: ['#FFFFFF', '#FFB3E6', '#FF69B4'], trail: 'rgba(255, 105, 180, 0.8)', overlay: 'rgba(255, 105, 180, 0.08)' },
+        { name: 'cyan', head: ['#FFFFFF', '#B3F0FF', '#00CED1'], trail: 'rgba(0, 206, 209, 0.8)', overlay: 'rgba(0, 206, 209, 0.08)' },
+    ];
 
     useEffect(() => {
         const canvas = canvasRef.current;
@@ -516,16 +533,75 @@ export default function NewTheoryPage() {
         };
     }, []);
 
+    // Sequence Controller - Manages 9-iteration loop with camera shifts
+    useEffect(() => {
+        if (!showShootingStar) return;
+
+        // Total time for one complete sequence:
+        // - Stars: 0-4.3s
+        // - Collage fade in: 4.3-6.1s
+        // - Collage visible: 6.1-11.1s
+        // - Collage fade out: 11.1-12.1s
+        // - Camera shift: 12.1-14.1s (2 seconds)
+        // Total: ~14.1s per iteration
+
+        // Trigger camera shift after collage fades out
+        const cameraShiftTimer = setTimeout(() => {
+            // Alternate direction: even iterations go right, odd go left
+            const direction = currentIteration % 2 === 0 ? 'right' : 'left';
+            setCameraShift(direction);
+        }, 12100); // Start shift at 12.1s
+
+        // Complete sequence and move to next iteration
+        const sequenceTimer = setTimeout(() => {
+            // Reset camera shift
+            setCameraShift('none');
+
+            // Move to next iteration
+            const nextIteration = (currentIteration + 1) % 9;
+            setCurrentIteration(nextIteration);
+
+            // Update color for next iteration
+            setCurrentColor(nextIteration);
+
+            // Reset shooting star to trigger next sequence
+            setShowShootingStar(false);
+
+            // Re-trigger after a brief pause
+            setTimeout(() => {
+                setShowShootingStar(true);
+            }, 100);
+        }, 14100); // 14.1 seconds total
+
+        return () => {
+            clearTimeout(cameraShiftTimer);
+            clearTimeout(sequenceTimer);
+        };
+    }, [showShootingStar, currentIteration]);
+
     return (
         <section
             className="relative w-screen h-screen overflow-hidden"
             style={{ minHeight: "100vh", minWidth: "100vw", background: "#000000" }}
         >
-            <canvas
-                ref={canvasRef}
-                className="absolute inset-0 w-full h-full"
-                style={{ background: "#000000" }}
-            />
+            {/* Camera Shift Wrapper */}
+            <div
+                className={`camera-shift-wrapper ${cameraShift !== 'none' ? `shift-${cameraShift}` : ''}`}
+                style={{
+                    position: 'absolute',
+                    inset: 0,
+                    transition: cameraShift !== 'none' ? 'transform 2s ease-in-out' : 'none',
+                    transform: cameraShift === 'left' ? 'translateX(-100vw)' :
+                        cameraShift === 'right' ? 'translateX(100vw)' :
+                            'translateX(0)'
+                }}
+            >
+                <canvas
+                    ref={canvasRef}
+                    className="absolute inset-0 w-full h-full"
+                    style={{ background: "#000000" }}
+                />
+            </div>
 
             <div className="relative z-10 w-full h-full flex items-center justify-center">
                 <div className="text-center text-white">
@@ -538,21 +614,48 @@ export default function NewTheoryPage() {
                 </div>
             </div>
 
+            {/* BentoBox Collage (Fades in during small stars 0-1.8s) */}
+            {showShootingStar && (
+                <div className="collage-wrapper">
+                    <BentoGallery images={[
+                        "/shoot1/1.png",
+                        "/shoot1/10.png",
+                        "/shoot1/2.png",
+                        "/shoot1/3.png",
+                        "/shoot1/4.png",
+                        "/shoot1/5.png",
+                        "/shoot1/6.png",
+                        "/shoot1/7.png",
+                        "/shoot1/8.png",
+                        "/shoot1/9.png"
+                    ]} />
+                </div>
+            )}
+
+            {/* Subtle Color Overlay (Appears when main star appears at 1.8s) */}
+            {showShootingStar && (
+                <div className="gold-overlay-static" style={{
+                    background: colorPalette[currentColor].overlay
+                }}></div>
+            )}
+
             {/* Shooting Star Animation (Gold Main + White Shower) */}
             {
                 showShootingStar && (
                     <div className="shooting-star-container">
                         <div className="shooting-star">
-                            {/* Trail (Gold Gradient) */}
-                            <div className="shooting-star-trail"></div>
+                            {/* Trail (Dynamic Color) */}
+                            <div className="shooting-star-trail" style={{
+                                background: `linear-gradient(to left, ${colorPalette[currentColor].trail}, ${colorPalette[currentColor].trail.replace('0.8', '0.4')}, transparent 100%)`
+                            }}></div>
                             {/* Comet Head (Gold Star) */}
                             <div className="shooting-star-head">
                                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
                                     <defs>
                                         <radialGradient id="starGradient">
-                                            <stop offset="0%" stopColor="#FFFFFF" />
-                                            <stop offset="50%" stopColor="#ffecb3" />
-                                            <stop offset="100%" stopColor="#bf953f" />
+                                            <stop offset="0%" stopColor={colorPalette[currentColor].head[0]} />
+                                            <stop offset="50%" stopColor={colorPalette[currentColor].head[1]} />
+                                            <stop offset="100%" stopColor={colorPalette[currentColor].head[2]} />
                                         </radialGradient>
                                     </defs>
                                     <path
@@ -616,6 +719,41 @@ export default function NewTheoryPage() {
                     pointer-events: none;
                     z-index: 20;
                 }
+
+                /* COLLAGE WRAPPER - Appears after main star finishes (4.3s), stays 5s, fades out */
+                .collage-wrapper {
+                    position: absolute;
+                    inset: 0;
+                    z-index: 5;
+                    opacity: 0;
+                    animation: collageFadeInOut 7.8s ease-in-out forwards 4.3s; /* Delay 4.3s */
+                    pointer-events: none;
+                }
+
+                @keyframes collageFadeInOut {
+                    0% { opacity: 0; }
+                    23% { opacity: 0.6; } /* Fade in complete at 1.8s (1.8/7.8 = 23%) */
+                    87% { opacity: 0.6; } /* Stay visible until 6.8s (6.8/7.8 = 87%) - that's 5s of visibility */
+                    100% { opacity: 0; } /* Fade out by 7.8s */
+                }
+
+                /* STATIC GOLD OVERLAY - Appears when main star appears (1.8s) */
+                .gold-overlay-static {
+                    position: absolute;
+                    inset: 0;
+                    background: rgba(255, 215, 0, 0.08); /* Very subtle gold tint */
+                    z-index: 15;
+                    opacity: 0;
+                    animation: goldFadeIn 0.5s ease-out forwards 1.8s; /* Delay 1.8s */
+                    pointer-events: none;
+                }
+
+                @keyframes goldFadeIn {
+                    0% { opacity: 0; }
+                    100% { opacity: 1; }
+                }
+
+                /* Companion / Parallel Stars (White) */
 
                 /* Companion / Parallel Stars (White) */
                 .shooting-star-companion {
