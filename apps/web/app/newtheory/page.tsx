@@ -192,14 +192,16 @@ export default function NewTheoryPage() {
                 bgParticlesCreated = true;
                 // Create 100 new stationary background particles (reduced from 200)
                 for (let i = 0; i < 100; i++) {
+                    // 30% foreground particles for visual interest
+                    const isForeground = i < 30;
                     newBgParticles.push({
                         x: Math.random() * canvas.width,
                         y: Math.random() * canvas.height,
-                        size: Math.random() * 1.5 + 0.5,
+                        size: isForeground ? Math.random() * 2 + 1.0 : Math.random() * 1.5 + 0.5,
                         baseSpeedY: 0,
                         speedX: 0,
                         speedY: 0,
-                        opacity: Math.random() * 0.6 + 0.2,
+                        opacity: isForeground ? Math.random() * 0.7 + 0.5 : Math.random() * 0.6 + 0.2,
                         floatOffset: Math.random() * Math.PI * 2,
                         floatSpeed: Math.random() * 0.02 + 0.01,
                     });
@@ -217,6 +219,16 @@ export default function NewTheoryPage() {
                         particle.y = canvas.height + 10;
                     }
                 } else if (phase === "descending") {
+                    // Smooth transition from slow to fast at start of descent
+                    let transitionMultiplier = 1.0;
+                    if (cometProgress < 0.25) {
+                        // Extended ease-in from slow to fast over first 25% of descent (was 15%)
+                        const transitionProgress = cometProgress / 0.25; // 0 to 1
+                        // Quadratic ease-in for gentler, smoother acceleration (was cubic)
+                        const easedProgress = transitionProgress * transitionProgress;
+                        transitionMultiplier = easedProgress;
+                    }
+
                     // Particles move UPWARD (opposite to comet which moves down)
                     // Speed based on layer and comet velocity
                     let particleSpeedMultiplier = 0;
@@ -241,8 +253,8 @@ export default function NewTheoryPage() {
                         speedBoost = 1.0 + exitProgress * 0.7; // Up to 1.7x boost
                     }
 
-                    // Move particles upward - VERY FAST with potential boost
-                    const particleVelocity = -cometSpeed * 400 * particleSpeedMultiplier * speedBoost;
+                    // Move particles upward - VERY FAST with potential boost and smooth transition
+                    const particleVelocity = -cometSpeed * 400 * particleSpeedMultiplier * speedBoost * transitionMultiplier;
                     particle.y += particleVelocity;
 
                     // Wrap around - particles that exit top don't come back
