@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence, Variants } from "framer-motion";
 
-export default function LoadingPage() {
+export default function LoadingRemastered() {
     // We use a key to force-remount the animation for the demo loop
     const [loopKey, setLoopKey] = useState(0);
 
