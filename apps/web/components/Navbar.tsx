@@ -35,7 +35,34 @@ const NavBar = () => {
             <a
               key={item}
               href={href}
-              onClick={() => setActiveIndex(index)}
+              onClick={(e) => {
+                // Allow default behavior for TIMELINE (navigation)
+                if (item === "TIMELINE") {
+                  setActiveIndex(index);
+                  return;
+                }
+
+                e.preventDefault();
+                setActiveIndex(index);
+                const targetId = item.toLowerCase();
+                if (targetId === 'home') {
+                  if (pathname !== "/") {
+                    window.location.href = "/";
+                  } else {
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }
+                } else {
+                  if (pathname !== "/") {
+                    // If not on home, go to home with hash
+                    window.location.href = `/#${targetId}`;
+                  } else {
+                    const element = document.getElementById(targetId);
+                    if (element) {
+                      element.scrollIntoView({ behavior: 'smooth' });
+                    }
+                  }
+                }
+              }}
               className={`group relative text-xs tracking-[0.3em] 
               font-semibold uppercase px-1 transition-all duration-300
               
@@ -78,8 +105,9 @@ const NavBar = () => {
             </a>
           );
         })}
+
       </div>
-    </nav>
+    </nav >
   );
 };
 

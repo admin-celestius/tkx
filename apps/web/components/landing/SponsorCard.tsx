@@ -20,13 +20,13 @@ const SponsorCard = ({ name, logo, index }: SponsorCardProps) => {
 
       {/* Card */}
       <div className="relative overflow-hidden rounded-2xl bg-black/70 backdrop-blur-xl border border-amber-200/40 p-8 transition-all duration-500 group-hover:border-amber-200 group-hover:-translate-y-1 group-hover:shadow-[0_20px_60px_-15px_rgba(255,193,7,0.5)]">
-        
+
         {/* Shimmer */}
         <div className="absolute inset-0 -translate-x-full shimmer group-hover:animate-shimmer" />
 
         {/* Logo */}
         <div className="flex h-24 items-center justify-center">
-          <span className="text-4xl font-bold bg-linear-to-r from-amber-300 via-yellow-300 to-amber-400 bg-clip-text text-transparent">
+          <span className="text-4xl font-bold text-gold-premium">
             {logo}
           </span>
         </div>

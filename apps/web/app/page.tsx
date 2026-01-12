@@ -2,6 +2,8 @@ import LoadingPage from "@/components/LoadingScreen";
 import Hero from "@/components/Hero";
 import Carousel from "@/components/Carousel";
 import Footer from "@/components/Footer";
+import AboutSection from "@/components/landing/AboutSection";
+import ContactSection from "@/components/landing/ContactSection";
 
 const SLIDES = [
   { image: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=800&auto=format&fit=crop", title: "Retro Tech" },
@@ -17,36 +19,13 @@ export default function Home() {
       <LoadingPage />
       <Hero />
       <section id="about">
-        {/* Additional sections like Events, Highlights, Sponsors can be added here */}
-        <div className="container mx-auto px-4 py-8 text-center">
-          <h2 className="text-3xl font-bold mb-6 text-[#ffda75]">Welcome to Takshashila 2026</h2>
-          <p className="text-lg mb-4 text-gray-300">
-            Join us for an unforgettable experience at Takshashila 2026, the 10th edition of Chennai Institute of Technology's premier cultural festival. Enjoy a variety of events, performances, and activities that celebrate creativity, talent, and culture.
-          </p>
-          <p className="text-lg text-gray-400">
-            Stay tuned for more updates on our exciting lineup of events and special guests!
-          </p>
-        </div>
-      </section>
-      <section id="events">
-        <div className="py-20 text-center text-[#d6b25a]">Events Coming Soon</div>
-      </section>
-      <section id="workshops">
-        <div className="py-20 text-center text-[#d6b25a]">Workshops Coming Soon</div>
-      </section>
-      <section id="gallery">
-        <Carousel slides={SLIDES} />
+        <AboutSection />
       </section>
       <section id="contact">
-        <div className="bg-zinc-900/50 py-8 border-t border-[#d6b25a]/20">
-          <div className="container mx-auto px-4 text-center">
-            <h2 className="text-2xl font-bold mb-4 text-[#ffda75]">Get Involved</h2>
-            <p className="text-lg mb-4 text-gray-300">
-              Whether you're a participant, volunteer, or sponsor, there's a place for you at Takshashila 2026. Reach out to us to learn how you can be part of this grand celebration.
-            </p>
-            <a href="/contact" className="text-[#d6b25a] underline hover:text-[#ffda75]">Contact Us</a>
-          </div>
-        </div>
+        <ContactSection />
+      </section>
+      <section>
+        <Carousel slides={SLIDES} />
       </section>
       <section>
         <Footer />
