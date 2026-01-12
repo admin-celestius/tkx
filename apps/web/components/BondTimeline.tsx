@@ -4,7 +4,7 @@ import { useRef, useState, useLayoutEffect } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
-import IntroZoom from "./IntroZoom";
+
 import FluidLogo from "./FluidLogo";
 import YearSection from "./YearSection";
 import TimelineProgress, { TimelineProgressHandle } from "./TimelineProgress";
@@ -113,10 +113,10 @@ export default function BondTimeline() {
     const panelsRef = useRef<(HTMLDivElement | null)[]>([]);
     const progressRef = useRef<TimelineProgressHandle>(null);
     const [initialState] = useState(milestones[0]);
-    const [introComplete, setIntroComplete] = useState(false);
+
 
     useLayoutEffect(() => {
-        if (!introComplete) return;
+
 
         let ctx: gsap.Context;
 
@@ -143,6 +143,8 @@ export default function BondTimeline() {
                                     milestones[idx].theme.font || "font-sans"
                                 );
                             }
+
+                            // NAVBAR FADE LOGIC REMOVED (User requested "keep the navbar on top forever")
                         }
                     }
                 });
@@ -172,8 +174,15 @@ export default function BondTimeline() {
                     // Initial State: Hidden & Offset
                     if (isFirst) {
                         gsap.set([wrappers, logo, debris], { yPercent: 0, opacity: 1 });
-                    } else {
+                    }
+
+                    if (!isFirst) {
                         gsap.set([wrappers, logo, debris], { yPercent: 40, opacity: 0 });
+                    }
+
+                    // FORCE LOGO POSITION (Overrides previous sets)
+                    if (logo) {
+                        gsap.set(logo, { top: "45%", yPercent: -50, xPercent: -50 });
                     }
 
                     // Reset Transition Specifics
@@ -423,7 +432,7 @@ export default function BondTimeline() {
             clearTimeout(timer);
             if (ctx) ctx.revert();
         };
-    }, [introComplete]);
+    }, []);
 
     return (
         <div className="timeline-wrapper relative w-full h-full bg-black">
@@ -449,16 +458,12 @@ export default function BondTimeline() {
                 </defs>
             </svg>
 
-            {!introComplete && (
-                <div className="fixed inset-0 z-[9999]">
-                    <IntroZoom onComplete={() => setIntroComplete(true)} />
-                </div>
-            )}
+
 
             <div
                 ref={containerRef}
                 className="relative w-full h-screen overflow-hidden"
-                style={{ opacity: introComplete ? 1 : 0, transition: 'opacity 0.8s ease-in' }}
+                style={{ opacity: 1 }}
             >
                 <TimelineProgress ref={progressRef} milestones={milestones} initialYear={initialState.year} initialFont={initialState.theme.font} />
 
@@ -494,8 +499,8 @@ export default function BondTimeline() {
                             style={style}
                         >
                             {/* --- UNIFIED VISUALS --- */}
-                            {/* Logo Lifted: top-[20%] (User requested "do top 20%") */}
-                            <div className="fluid-logo-container absolute top-[20%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-80 z-[60] opacity-80 pointer-events-none">
+                            {/* Logo Lifted: top-[45%] (User requested "do top 45%") */}
+                            <div className="fluid-logo-container absolute top-[45%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-80 z-[60] opacity-80 pointer-events-none">
                                 <FluidLogo fillProgress={1} baseColor={item.theme.text} width={256} height={320} />
                             </div>
 

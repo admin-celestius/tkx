@@ -30,9 +30,40 @@ export default function SmoothScroll() {
         // Disable GSAP's native lag smoothing to prevent stutter
         gsap.ticker.lagSmoothing(0);
 
+        // --- CUSTOM ANCHOR HANDLING ---
+        // 1. Handle Initial Hash (e.g. loading /#events directly)
+        if (window.location.hash) {
+            const target = document.querySelector(window.location.hash) as HTMLElement;
+            if (target) {
+                // Short delay to allow layout to settle
+                setTimeout(() => {
+                    lenis.scrollTo(target, { offset: 0 });
+                }, 100);
+            }
+        }
+
+        // 2. Intercept Anchor Clicks for Smooth Scroll
+        const handleAnchorClick = (e: MouseEvent) => {
+            const target = e.target as HTMLElement;
+            const anchor = target.closest('a');
+            if (!anchor) return;
+
+            const href = anchor.getAttribute('href');
+            if (href?.startsWith('#')) {
+                e.preventDefault();
+                const element = document.querySelector(href) as HTMLElement;
+                if (element) {
+                    lenis.scrollTo(element, { offset: 0 });
+                }
+            }
+        };
+
+        document.addEventListener('click', handleAnchorClick);
+
         return () => {
             lenis.destroy();
             gsap.ticker.remove(lenis.raf);
+            document.removeEventListener('click', handleAnchorClick);
         };
     }, []);
 

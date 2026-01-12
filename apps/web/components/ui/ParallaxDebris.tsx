@@ -24,6 +24,12 @@ export default function ParallaxDebris({ color, count = 10, seed = 1 }: Parallax
         return Array.from({ length: count }).map((_, i) => {
             const size = 20 + random() * 40; // 20-60px
             const shapeType = random(); // 0-1
+            const r1 = random();
+            const r2 = random();
+            const r3 = random();
+            const r4 = random();
+            const r5 = random();
+            const r6 = random();
 
             // Shape Logic
             let borderRadius = '0%';
@@ -42,11 +48,12 @@ export default function ParallaxDebris({ color, count = 10, seed = 1 }: Parallax
 
             return {
                 width: size,
-                height: size * (0.8 + random() * 0.4), // Vary aspect ratio
-                top: `${random() * 100}%`,
-                left: `${random() * 100}%`,
-                rotate: random() * 360,
-                opacity: 0.1 + random() * 0.2, // Low opacity base
+                height: size * (0.8 + r1 * 0.4), // Vary aspect ratio
+                top: `${r2 * 100}%`,
+                left: `${r3 * 100}%`,
+                rotate: r4 * 360,
+                opacity: 0.1 + r5 * 0.2, // Low opacity base
+                rotationSpeed: 0.5 + r6, // Deterministic rotation speed
                 borderRadius,
                 clipPath
             };
@@ -59,7 +66,7 @@ export default function ParallaxDebris({ color, count = 10, seed = 1 }: Parallax
                 <div
                     key={i}
                     className="parallax-shard absolute bg-current"
-                    data-rotation-speed={0.5 + Math.random()} // Random speed for GSAP to pick up
+                    data-rotation-speed={s.rotationSpeed}
                     style={{
                         backgroundColor: color,
                         width: s.width,
@@ -69,8 +76,7 @@ export default function ParallaxDebris({ color, count = 10, seed = 1 }: Parallax
                         transform: `rotate(${s.rotate}deg)`,
                         opacity: 0.3 + s.opacity * 0.4, // TRANSLUCENT (0.3 to 0.7)
                         borderRadius: s.borderRadius,
-                        clipPath: s.clipPath,
-                        filter: "brightness(0.7)" // Darker shade
+                        clipPath: s.clipPath
                     }}
                 />
             ))}

@@ -1,10 +1,20 @@
 @import "tailwindcss";
 
 /* hide scrollbar */
-body::-webkit-scrollbar{
+body::-webkit-scrollbar {
     display: none;
 }
 
-body, a, button, input, select, textarea {
-    cursor: none;
+body,
+a,
+button,
+input,
+select,
+textarea {
+    /* cursor: none;  <-- TEMPORARILY DISABLED FOR DEBUGGING */
+}
+
+body {
+    background-color: black;
+    color: white;
 }

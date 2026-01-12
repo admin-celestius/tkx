@@ -303,11 +303,7 @@ export default function Hero() {
 
                     // C. Comet Cursor Style Star (Impact Point)
                     if (phase === "line" || phase === "wind") {
-                        // Lock/Hide Cursor
-                        document.body.style.cursor = 'none';
-                        const customCursor = document.querySelector('.custom-cursor') as HTMLElement;
-                        if (customCursor) customCursor.style.opacity = '0';
-
+                        // REMOVED LOCAL CURSOR HIDING - Relying on Global Settings
                         const starX = centerX + jitterX;
                         const starY = headY + jitterY;
 
@@ -364,11 +360,7 @@ export default function Hero() {
         return () => {
             window.removeEventListener("resize", resize);
             cancelAnimationFrame(animationId);
-
-            // Restore cursor
-            document.body.style.cursor = 'auto';
-            const customCursor = document.querySelector('.custom-cursor') as HTMLElement;
-            if (customCursor) customCursor.style.opacity = '1';
+            // REMOVED LOCAL CURSOR RESTORATION
         };
     }, []);
 

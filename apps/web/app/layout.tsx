@@ -129,7 +129,6 @@ export default function RootLayout({
         <SmoothScroll />
         <CometCursor />
         <Navbar />
-        <Scroller />
         {children}
       </body>
     </html >
