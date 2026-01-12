@@ -1,10 +1,22 @@
 @import "tailwindcss";
 
 /* hide scrollbar */
-body::-webkit-scrollbar{
+body::-webkit-scrollbar {
     display: none;
 }
 
-body, a, button, input, select, textarea {
+body,
+a,
+button,
+input,
+select,
+textarea {
     cursor: none;
+}
+
+/* Hide custom cursor on touch devices */
+@media (pointer: coarse) {
+    .custom-cursor {
+        display: none;
+    }
 }

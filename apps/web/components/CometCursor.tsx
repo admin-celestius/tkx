@@ -21,6 +21,16 @@ const CometCursor = () => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
 
     useEffect(() => {
+        // Detect touch device and remove custom cursor
+        const isTouchDevice =
+            'ontouchstart' in window ||
+            navigator.maxTouchPoints > 0;
+
+        if (isTouchDevice) {
+            document.querySelector('.custom-cursor')?.remove();
+            return;
+        }
+
         const canvas = canvasRef.current;
         if (!canvas) return;
 
