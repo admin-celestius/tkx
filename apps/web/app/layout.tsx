@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 import Scroller from "@/components/Scroller";
 import CometCursor from "@/components/CometCursor";
+import Navbar from "@/components/Navbar";
+import SmoothScroll from "@/components/SmoothScroll";
 
 export const metadata: Metadata = {
   title: "Takshashila 2026 | Celebrating 10 Years of TK",
@@ -124,10 +126,11 @@ export default function RootLayout({
         />
       </head>
       <body>
+        <SmoothScroll />
         <CometCursor />
-        <Scroller />
+        <Navbar />
         {children}
       </body>
-    </html>
+    </html >
   );
 }

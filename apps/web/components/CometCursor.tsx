@@ -30,12 +30,20 @@ const CometCursor = () => {
             document.querySelector('.custom-cursor')?.remove();
             return;
         }
-
         const canvas = canvasRef.current;
-        if (!canvas) return;
+        if (!canvas) {
+            console.error("CometCursor: No Canvas");
+            return;
+        }
 
         const ctx = canvas.getContext('2d');
-        if (!ctx) return;
+        if (!ctx) {
+            console.error("CometCursor: No Context");
+            return;
+        }
+
+        // ... rest of code
+        // For debug, let's keep the style update below
 
         // --- Configuration ---
         let width = window.innerWidth;
@@ -115,27 +123,36 @@ const CometCursor = () => {
             // Increased speed slightly on hover.
             currentRotation += isHovering ? 0.06 : 0.02;
 
-            // 3. Emitters
-            // A. Gold Dust
-            // Spawn based on movement speed
-            const dustCount = Math.floor(speed * 0.5);
-            for (let i = 0; i < dustCount; i++) {
-                const r = 20 * currentScale;
-                const angle = Math.random() * Math.PI * 2;
-                const dist = Math.random() * r;
-                particles.push({
-                    x: pos.x + Math.cos(angle) * dist,
-                    y: pos.y + Math.sin(angle) * dist,
-                    vx: (Math.random() - 0.5) * 0.5, // Drift randomly
-                    vy: (Math.random() - 0.5) * 0.5,
-                    life: 1,
-                    maxLife: 1,
-                    size: random(0.5, 1.5),
-                    alpha: random(0.3, 0.8),
-                    decay: random(0.02, 0.035), // Die slower (lasts ~0.5s longer)
-                    type: 'dust',
-                    color: '255, 236, 179'
-                });
+            // 3. Emitters (INTERPOLATED for continuous trail)
+            const dist = Math.hypot(vx, vy);
+            const steps = Math.ceil(dist / 2); // Spawn every 2 pixels of movement
+
+            for (let i = 0; i < steps; i++) {
+                const t = i / steps;
+                const activeX = lastPos.x + (pos.x - lastPos.x) * t;
+                const activeY = lastPos.y + (pos.y - lastPos.y) * t;
+
+                // A. Gold Dust
+                // Reduced count per step to compensate for increased steps
+                if (Math.random() < 0.5) {
+                    const r = 20 * currentScale;
+                    const angle = Math.random() * Math.PI * 2;
+                    const d = Math.random() * r;
+
+                    particles.push({
+                        x: activeX + Math.cos(angle) * d,
+                        y: activeY + Math.sin(angle) * d,
+                        vx: (Math.random() - 0.5) * 0.5,
+                        vy: (Math.random() - 0.5) * 0.5,
+                        life: 1,
+                        maxLife: 1,
+                        size: random(0.5, 1.5),
+                        alpha: random(0.3, 0.8),
+                        decay: random(0.01, 0.015), // Extended Life (~1.3s at 60fps)
+                        type: 'dust',
+                        color: '255, 236, 179'
+                    });
+                }
             }
 
             // B. Grey Smoke
@@ -265,7 +282,7 @@ const CometCursor = () => {
                 width: '100%',
                 height: '100%',
                 pointerEvents: 'none',
-                zIndex: 9999
+                zIndex: 9999999
             }}
         />
     );

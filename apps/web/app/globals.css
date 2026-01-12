@@ -14,6 +14,11 @@ textarea {
     cursor: none;
 }
 
+body {
+    background-color: black;
+    color: white;
+}
+
 /* Hide custom cursor on touch devices */
 @media (pointer: coarse) {
     .custom-cursor {
