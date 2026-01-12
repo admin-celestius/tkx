@@ -11,15 +11,12 @@ button,
 input,
 select,
 textarea {
-<<<<<<< HEAD
-    /* cursor: none;  <-- TEMPORARILY DISABLED FOR DEBUGGING */
+    cursor: none;
 }
 
 body {
     background-color: black;
     color: white;
-=======
-    cursor: none;
 }
 
 /* Hide custom cursor on touch devices */
@@ -27,5 +24,4 @@ body {
     .custom-cursor {
         display: none;
     }
->>>>>>> 4066b1cf8ee76aa7275ceb8d115491e00e02631a
 }

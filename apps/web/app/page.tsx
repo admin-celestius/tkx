@@ -28,6 +28,15 @@ export default function Home() {
           </p>
         </div>
       </section>
+      <section id="events">
+        <div className="py-20 text-center text-[#d6b25a]">Events Coming Soon</div>
+      </section>
+      <section id="workshops">
+        <div className="py-20 text-center text-[#d6b25a]">Workshops Coming Soon</div>
+      </section>
+      <section id="gallery">
+        <Carousel slides={SLIDES} />
+      </section>
       <section id="contact">
         <div className="bg-zinc-900/50 py-8 border-t border-[#d6b25a]/20">
           <div className="container mx-auto px-4 text-center">
@@ -38,15 +47,6 @@ export default function Home() {
             <a href="/contact" className="text-[#d6b25a] underline hover:text-[#ffda75]">Contact Us</a>
           </div>
         </div>
-      </section>
-      <section id="gallery">
-        <Carousel slides={SLIDES} />
-      </section>
-      <section id="events">
-        <div className="py-20 text-center text-[#d6b25a]">Events Coming Soon</div>
-      </section>
-      <section id="workshops">
-        <div className="py-20 text-center text-[#d6b25a]">Workshops Coming Soon</div>
       </section>
       <section>
         <Footer />
