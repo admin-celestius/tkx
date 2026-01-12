@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export default function NewTheoryPage() {
     const canvasRef = useRef<HTMLCanvasElement>(null);
+    const [showShootingStar, setShowShootingStar] = useState(false);
 
     useEffect(() => {
         const canvas = canvasRef.current;
@@ -113,6 +114,7 @@ export default function NewTheoryPage() {
         const newBgParticles: Particle[] = [];
         let bgParticlesCreated = false;
         let bgFadeProgress = 0; // 0 to 1 for smooth fade-in
+        let shootingStarTriggered = false;
 
         // Start descending after floating
         setTimeout(() => {
@@ -185,6 +187,12 @@ export default function NewTheoryPage() {
             // Gradually fade in new background particles
             if (bgParticlesCreated && bgFadeProgress < 1) {
                 bgFadeProgress += 0.01; // Slow fade-in over ~100 frames
+            }
+
+            // Trigger shooting star after background fully faded in
+            if (bgFadeProgress >= 1.0 && !shootingStarTriggered && cometProgress >= 1.5) {
+                shootingStarTriggered = true;
+                setShowShootingStar(true);
             }
 
             // Create new background particles after comet exits
@@ -529,6 +537,211 @@ export default function NewTheoryPage() {
                     </p>
                 </div>
             </div>
+
+            {/* Shooting Star Animation (Gold Main + White Shower) */}
+            {
+                showShootingStar && (
+                    <div className="shooting-star-container">
+                        <div className="shooting-star">
+                            {/* Trail (Gold Gradient) */}
+                            <div className="shooting-star-trail"></div>
+                            {/* Comet Head (Gold Star) */}
+                            <div className="shooting-star-head">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                    <defs>
+                                        <radialGradient id="starGradient">
+                                            <stop offset="0%" stopColor="#FFFFFF" />
+                                            <stop offset="50%" stopColor="#ffecb3" />
+                                            <stop offset="100%" stopColor="#bf953f" />
+                                        </radialGradient>
+                                    </defs>
+                                    <path
+                                        d="M12 0 L14 10 L24 12 L14 14 L12 24 L10 14 L0 12 L10 10 Z"
+                                        fill="url(#starGradient)"
+                                        stroke="rgba(255, 236, 179, 0.5)"
+                                        strokeWidth="0.5"
+                                    />
+                                </svg>
+                            </div>
+                        </div>
+
+                        {/* --- SHOWER SEQUENCE (White Trails) --- */}
+
+                        {/* 1. Pre-Main (0s - 1.5s) */}
+                        <div className="shooting-star-companion" style={{ top: '15%', right: '23%', animationDuration: '1.4s', animationDelay: '0s' }}>
+                            <div className="shooting-star-trail" style={{ width: '300px', animationDuration: '1.4s', animationDelay: '0s' }}></div>
+                        </div>
+                        <div className="shooting-star-companion" style={{ top: '28%', right: '15%', animationDuration: '1.2s', animationDelay: '0.3s' }}>
+                            <div className="shooting-star-trail" style={{ width: '250px', animationDuration: '1.2s', animationDelay: '0.3s' }}></div>
+                        </div>
+                        <div className="shooting-star-companion" style={{ top: '12%', right: '28%', animationDuration: '1.5s', animationDelay: '0.7s' }}>
+                            <div className="shooting-star-trail" style={{ width: '350px', animationDuration: '1.5s', animationDelay: '0.7s' }}></div>
+                        </div>
+                        <div className="shooting-star-companion" style={{ top: '22%', right: '20%', animationDuration: '1.0s', animationDelay: '1.2s' }}>
+                            <div className="shooting-star-trail" style={{ width: '200px', animationDuration: '1.0s', animationDelay: '1.2s' }}></div>
+                        </div>
+
+                        {/* 2. During-Main (1.5s - 3.5s) */}
+                        <div className="shooting-star-companion" style={{ top: '18%', right: '25%', animationDuration: '1.3s', animationDelay: '2.0s' }}>
+                            <div className="shooting-star-trail" style={{ width: '280px', animationDuration: '1.3s', animationDelay: '2.0s' }}></div>
+                        </div>
+                        <div className="shooting-star-companion" style={{ top: '30%', right: '12%', animationDuration: '1.1s', animationDelay: '2.5s' }}>
+                            <div className="shooting-star-trail" style={{ width: '220px', animationDuration: '1.1s', animationDelay: '2.5s' }}></div>
+                        </div>
+                        <div className="shooting-star-companion" style={{ top: '14%', right: '30%', animationDuration: '1.4s', animationDelay: '3.0s' }}>
+                            <div className="shooting-star-trail" style={{ width: '320px', animationDuration: '1.4s', animationDelay: '3.0s' }}></div>
+                        </div>
+
+                        {/* 3. Post-Main (3.5s - 5.5s) - "Even after disappearance" */}
+                        <div className="shooting-star-companion" style={{ top: '25%', right: '18%', animationDuration: '1.2s', animationDelay: '4.2s' }}>
+                            <div className="shooting-star-trail" style={{ width: '260px', animationDuration: '1.2s', animationDelay: '4.2s' }}></div>
+                        </div>
+                        <div className="shooting-star-companion" style={{ top: '10%', right: '32%', animationDuration: '1.6s', animationDelay: '4.8s' }}>
+                            <div className="shooting-star-trail" style={{ width: '380px', animationDuration: '1.6s', animationDelay: '4.8s' }}></div>
+                        </div>
+                        <div className="shooting-star-companion" style={{ top: '20%', right: '22%', animationDuration: '1.0s', animationDelay: '5.2s' }}>
+                            <div className="shooting-star-trail" style={{ width: '200px', animationDuration: '1.0s', animationDelay: '5.2s' }}></div>
+                        </div>
+                    </div>
+                )
+            }
+
+            <style jsx>{`
+                .shooting-star-container {
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    pointer-events: none;
+                    z-index: 20;
+                }
+
+                /* Companion / Parallel Stars (White) */
+                .shooting-star-companion {
+                    position: absolute;
+                    display: flex;
+                    align-items: center;
+                    transform-origin: center;
+                    transform: rotate(155deg);
+                    animation: movementFast ease-in-out both; 
+                }
+
+                .shooting-star-companion .shooting-star-trail {
+                    position: absolute;
+                    right: 0;
+                    height: 2px; /* Thinner */
+                    border-radius: 2px;
+                    background: linear-gradient(
+                        to left, 
+                        rgba(255, 255, 255, 0.4) 0%, 
+                        rgba(255, 255, 255, 0.1) 50%, 
+                        transparent 100%
+                    );
+                    width: 0;
+                    animation: trailPhases ease-in-out both; 
+                }
+
+                /* Faster Movement for Companions - Stops before corner at 75vw */
+                @keyframes movementFast {
+                    0% {
+                        opacity: 0;
+                        transform: rotate(155deg) translateX(0);
+                    }
+                    10% { opacity: 1; }
+                    60% { opacity: 1; }
+                    90% { 
+                        opacity: 0;
+                        transform: rotate(155deg) translateX(75vw); 
+                    }
+                    100% {
+                        opacity: 0;
+                        transform: rotate(155deg) translateX(75vw);
+                    }
+                }
+
+                /* MAIN STAR (Gold) */
+                .shooting-star {
+                    position: absolute;
+                    top: 20%;
+                    right: 20%;
+                    display: flex;
+                    align-items: center;
+                    transform-origin: center;
+                    transform: rotate(155deg);
+                    /* 2.5s Duration, Starts AFTER small stars (1.8s delay) */
+                    animation: movement 2.5s ease-in-out both 1.8s;
+                }
+
+                .shooting-star-trail {
+                    position: absolute;
+                    right: 24px; 
+                    height: 4px;
+                    border-radius: 4px;
+                    /* Gold Gradient for Main Star */
+                    background: linear-gradient(
+                        to left, 
+                        rgba(255, 215, 0, 0.8),
+                        rgba(255, 215, 0, 0.4), 
+                        transparent 100%
+                    );
+                    width: 0;
+                    animation: trailPhases 2.5s ease-in-out both 1.8s;
+                }
+
+                .shooting-star-head {
+                    position: relative;
+                    z-index: 2;
+                    /* Gold Glow */
+                    filter: drop-shadow(0 0 8px rgba(255, 236, 179, 0.8)) drop-shadow(0 0 15px rgba(255, 236, 179, 0.5));
+                    animation: spinHead 2.5s linear infinite 1.8s, headFade 2.5s ease-in-out both 1.8s;
+                }
+
+                /* Trajectory Main - stop at 85vw */
+                @keyframes movement {
+                    0% {
+                        opacity: 0;
+                        transform: rotate(155deg) translateX(0);
+                    }
+                    10% { opacity: 1; }
+                    /* Move until 60% */
+                    60% {
+                        opacity: 1;
+                        transform: rotate(155deg) translateX(60vw); /* Synced w/ Head Fade */
+                    }
+                    /* Freeze 90-100% */
+                    90% {
+                        opacity: 0; 
+                        transform: rotate(155deg) translateX(60vw);
+                    }
+                    100% {
+                        opacity: 0;
+                        transform: rotate(155deg) translateX(60vw);
+                    }
+                }
+
+                /* Trail Phases - Peak 500px */
+                @keyframes trailPhases {
+                    0% { width: 0px; opacity: 0; }
+                    10% { width: 100px; opacity: 1; }
+                    50% { width: 500px; opacity: 1; }
+                    90% { width: 100px; opacity: 0.8; }
+                    100% { width: 0px; opacity: 0; }
+                }
+
+                @keyframes spinHead {
+                    0% { transform: rotate(0deg); }
+                    100% { transform: rotate(360deg); }
+                }
+
+                @keyframes headFade {
+                    0% { opacity: 0; }
+                    10% { opacity: 1; }
+                    40% { opacity: 1; } 
+                    60% { opacity: 0; } /* Gone by 60% */
+                    100% { opacity: 0; }
+                }
+            `}</style>
         </section>
     );
 }
