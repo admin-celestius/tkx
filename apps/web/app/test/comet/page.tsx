@@ -50,19 +50,42 @@ export default function CometTestPage() {
                     </div>
                 </div>
 
-                /* Companion 1: Higher/Left, starts immediately */
+                /* --- SHOWER SEQUENCE --- */
+
+                /* 1. Pre-Main (0s - 1.5s) */
                 <div className="shooting-star-companion" style={{ top: '15%', right: '23%', animationDuration: '1.4s', animationDelay: '0s' }}>
                     <div className="shooting-star-trail" style={{ width: '300px', animationDuration: '1.4s', animationDelay: '0s' }}></div>
                 </div>
-
-                /* Companion 2: Lower/Right, starts after 0.5s */
-                <div className="shooting-star-companion" style={{ top: '24%', right: '17%', animationDuration: '1.2s', animationDelay: '0.5s' }}>
-                    <div className="shooting-star-trail" style={{ width: '350px', animationDuration: '1.2s', animationDelay: '0.5s' }}></div>
+                <div className="shooting-star-companion" style={{ top: '28%', right: '15%', animationDuration: '1.2s', animationDelay: '0.3s' }}>
+                    <div className="shooting-star-trail" style={{ width: '250px', animationDuration: '1.2s', animationDelay: '0.3s' }}></div>
+                </div>
+                <div className="shooting-star-companion" style={{ top: '12%', right: '28%', animationDuration: '1.5s', animationDelay: '0.7s' }}>
+                    <div className="shooting-star-trail" style={{ width: '350px', animationDuration: '1.5s', animationDelay: '0.7s' }}></div>
+                </div>
+                <div className="shooting-star-companion" style={{ top: '22%', right: '20%', animationDuration: '1.0s', animationDelay: '1.2s' }}>
+                    <div className="shooting-star-trail" style={{ width: '200px', animationDuration: '1.0s', animationDelay: '1.2s' }}></div>
                 </div>
 
-                /* Companion 3: Close Parallel, starts after 1.0s */
-                <div className="shooting-star-companion" style={{ top: '19%', right: '24%', animationDuration: '1.0s', animationDelay: '1.0s' }}>
-                    <div className="shooting-star-trail" style={{ width: '250px', animationDuration: '1.0s', animationDelay: '1.0s' }}></div>
+                /* 2. During-Main (1.5s - 3.5s) */
+                <div className="shooting-star-companion" style={{ top: '18%', right: '25%', animationDuration: '1.3s', animationDelay: '2.0s' }}>
+                    <div className="shooting-star-trail" style={{ width: '280px', animationDuration: '1.3s', animationDelay: '2.0s' }}></div>
+                </div>
+                <div className="shooting-star-companion" style={{ top: '30%', right: '12%', animationDuration: '1.1s', animationDelay: '2.5s' }}>
+                    <div className="shooting-star-trail" style={{ width: '220px', animationDuration: '1.1s', animationDelay: '2.5s' }}></div>
+                </div>
+                <div className="shooting-star-companion" style={{ top: '14%', right: '30%', animationDuration: '1.4s', animationDelay: '3.0s' }}>
+                    <div className="shooting-star-trail" style={{ width: '320px', animationDuration: '1.4s', animationDelay: '3.0s' }}></div>
+                </div>
+
+                /* 3. Post-Main (3.5s - 5.5s) - "Even after disappearance" */
+                <div className="shooting-star-companion" style={{ top: '25%', right: '18%', animationDuration: '1.2s', animationDelay: '4.2s' }}>
+                    <div className="shooting-star-trail" style={{ width: '260px', animationDuration: '1.2s', animationDelay: '4.2s' }}></div>
+                </div>
+                <div className="shooting-star-companion" style={{ top: '10%', right: '32%', animationDuration: '1.6s', animationDelay: '4.8s' }}>
+                    <div className="shooting-star-trail" style={{ width: '380px', animationDuration: '1.6s', animationDelay: '4.8s' }}></div>
+                </div>
+                <div className="shooting-star-companion" style={{ top: '20%', right: '22%', animationDuration: '1.0s', animationDelay: '5.2s' }}>
+                    <div className="shooting-star-trail" style={{ width: '200px', animationDuration: '1.0s', animationDelay: '5.2s' }}></div>
                 </div>
             </div>
 
