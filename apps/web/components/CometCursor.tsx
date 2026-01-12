@@ -132,7 +132,7 @@ const CometCursor = () => {
                     maxLife: 1,
                     size: random(0.5, 1.5),
                     alpha: random(0.3, 0.8),
-                    decay: random(0.05, 0.1), // Die faster
+                    decay: random(0.02, 0.035), // Die slower (lasts ~0.5s longer)
                     type: 'dust',
                     color: '255, 236, 179'
                 });

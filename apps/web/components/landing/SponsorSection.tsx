@@ -39,10 +39,28 @@ const SponsorSection = () => {
     >
       {/* ================= TITLE ================= */}
       <div className="relative z-10 mb-20 text-center font-lexend">
-        <h2 className="text-4xl tracking-tight text-white md:text-6xl lg:text-7xl">
-          Our{" "}
+        <h2 className="text-4xl tracking-tight md:text-6xl lg:text-7xl">
+          <span
+            style={{
+              background: "linear-gradient(to bottom, #cfc09f 22%, #ffecb3 24%, #3a2c0f 26%, #99752d 27%, #ffecb3 40%, #bf953f 78%)",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+              backgroundClip: "text",
+              color: "transparent"
+            }}
+          >
+            Our{" "}
+          </span>
           <span className="relative inline-block">
-            <span className=" bg-linear-to-r from-amber-300 via-yellow-300 to-amber-400 bg-clip-text text-transparent">
+            <span
+              style={{
+                background: "linear-gradient(to bottom, #cfc09f 22%, #ffecb3 24%, #3a2c0f 26%, #99752d 27%, #ffecb3 40%, #bf953f 78%)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                backgroundClip: "text",
+                color: "transparent"
+              }}
+            >
               Sponsors
             </span>
 
@@ -50,8 +68,6 @@ const SponsorSection = () => {
             <span className="absolute -bottom-4 left-0 right-0 h-[3px] rounded-full bg-linear-to-r from-transparent via-amber-300 to-transparent opacity-70" />
           </span>
         </h2>
-
-        
       </div>
 
       {/* ================= SLIDER ================= */}

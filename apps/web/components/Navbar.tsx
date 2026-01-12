@@ -16,7 +16,19 @@ const NavBar = () => {
           <a
             key={item}
             href={`#${item.toLowerCase()}`}
-            onClick={() => setActiveIndex(index)}
+            onClick={(e) => {
+              e.preventDefault();
+              setActiveIndex(index);
+              const targetId = item.toLowerCase();
+              if (targetId === 'home') {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              } else {
+                const element = document.getElementById(targetId);
+                if (element) {
+                  element.scrollIntoView({ behavior: 'smooth' });
+                }
+              }
+            }}
             className={`group relative text-xs tracking-[0.3em] 
               font-semibold uppercase px-1 transition-all duration-300
               

@@ -146,7 +146,7 @@ const AboutSection: React.FC = () => {
                 initial={{ opacity: 0, rotateY: -90, z: -200 }}
                 animate={isCitInView ? { opacity: 1, rotateY: 0, z: 0 } : { opacity: 0, rotateY: -90, z: -200 }}
                 transition={{ duration: 1, ease: "easeOut", type: "spring", stiffness: 50 }}
-                className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-20 relative z-10"
+                className="w-full max-w-[95vw] mx-auto px-2 md:px-4 mb-20 relative z-10"
                 style={{ transformStyle: "preserve-3d" }}
             >
                 <div className="flex flex-col md:flex-row items-center gap-12">
@@ -156,17 +156,35 @@ const AboutSection: React.FC = () => {
                             initial={{ opacity: 0, x: -50 }}
                             animate={isCitInView ? { opacity: 1, x: 0 } : { opacity: 0, x: -50 }}
                             transition={{ duration: 0.8, delay: 0.3, ease: "easeOut" }}
-                            className="space-y-6 bg-gradient-to-br from-black/40 via-black/30 to-amber-900/10 
-                         backdrop-blur-md p-8 rounded-2xl border border-amber-500/20
-                         shadow-2xl shadow-amber-500/10 hover:shadow-amber-500/30 transition-shadow duration-500"
+                            className="space-y-8 bg-black/40 backdrop-blur-2xl p-10 md:p-14 rounded-3xl 
+                         shadow-[0_0_50px_-12px_rgba(251,191,36,0.1)] hover:shadow-[0_0_70px_-12px_rgba(251,191,36,0.2)] 
+                         transition-all duration-700 h-full flex flex-col justify-center min-h-[550px]"
                             style={{ transform: "translateZ(50px)" }}
                         >
+                            {/* Gradient Border */}
+                            <div
+                                className="absolute inset-0 rounded-2xl pointer-events-none"
+                                style={{
+                                    padding: '1px',
+                                    background: 'linear-gradient(to bottom, #cfc09f 22%, #ffecb3 24%, #3a2c0f 26%, #99752d 27%, #ffecb3 40%, #bf953f 78%)',
+                                    mask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
+                                    maskComposite: 'exclude',
+                                    WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
+                                    WebkitMaskComposite: 'xor'
+                                }}
+                            />
                             <h2
-                                className="text-4xl text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-yellow-500 to-amber-600 
-                           relative pb-4 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-16 after:h-1 
+                                className="text-4xl font-lexend relative pb-4 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-16 after:h-1 
                            after:bg-gradient-to-r after:from-amber-500 after:to-yellow-600 after:shadow-lg after:shadow-amber-500/50
-                           font-lexend drop-shadow-[0_0_15px_rgba(251,191,36,0.3)] transition-all duration-300 
+                           drop-shadow-[0_0_15px_rgba(251,191,36,0.3)] transition-all duration-300 
                            hover:drop-shadow-[0_0_25px_rgba(251,191,36,0.5)]"
+                                style={{
+                                    background: "linear-gradient(to bottom, #cfc09f 22%, #ffecb3 24%, #3a2c0f 26%, #99752d 27%, #ffecb3 40%, #bf953f 78%)",
+                                    WebkitBackgroundClip: "text",
+                                    WebkitTextFillColor: "transparent",
+                                    backgroundClip: "text",
+                                    color: "transparent"
+                                }}
                             >
                                 CIT
                             </h2>
@@ -206,7 +224,7 @@ const AboutSection: React.FC = () => {
                                         &ldquo;Our objective for establishing CIT is to transfer our knowledge to you, so that you can
                                         transform into a proper engineer&rdquo;
                                     </blockquote>
-                                    <cite className="block mt-4 text-amber-400 font-semibold">~ Shri Sriram Parthasarathy</cite>
+                                    <cite className="block mt-4 font-semibold text-gold-premium">~ Shri Sriram Parthasarathy</cite>
                                 </motion.div>
                             </div>
                         </motion.div>
@@ -218,14 +236,25 @@ const AboutSection: React.FC = () => {
                             initial={{ opacity: 0, x: 50, rotateY: 15 }}
                             animate={isCitInView ? { opacity: 1, x: 0, rotateY: 0 } : { opacity: 0, x: 50, rotateY: 15 }}
                             transition={{ duration: 1, delay: 0.4, ease: "easeOut" }}
-                            className="rounded-xl overflow-hidden shadow-2xl shadow-amber-500/20 
-                         border-2 border-amber-500/30 hover:border-amber-500/60 transition-all duration-500
-                         hover:shadow-amber-500/40 relative"
+                            className="rounded-3xl overflow-hidden shadow-[0_0_50px_-12px_rgba(251,191,36,0.1)] 
+                         hover:shadow-[0_0_70px_-12px_rgba(251,191,36,0.2)] transition-all duration-700 relative"
                             style={{ transform: "translateZ(75px)" }}
                         >
+                            {/* Gradient Border */}
+                            <div
+                                className="absolute inset-0 rounded-3xl pointer-events-none z-20"
+                                style={{
+                                    padding: '1px',
+                                    background: 'linear-gradient(to bottom, #cfc09f 22%, #ffecb3 24%, #3a2c0f 26%, #99752d 27%, #ffecb3 40%, #bf953f 78%)',
+                                    mask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
+                                    maskComposite: 'exclude',
+                                    WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
+                                    WebkitMaskComposite: 'xor'
+                                }}
+                            />
                             {/* Golden glow effect */}
                             <div className="absolute inset-0 bg-gradient-to-tr from-amber-500/0 via-amber-500/5 to-yellow-500/10 pointer-events-none z-10" />
-                            <SlideShow images={citImages} height="400px" interval={4000} />
+                            <SlideShow images={citImages} height="550px" interval={4000} />
                         </motion.div>
                     </TiltCard>
                 </div>
@@ -237,7 +266,7 @@ const AboutSection: React.FC = () => {
                 initial={{ opacity: 0, rotateY: 90, z: -200 }}
                 animate={isTakshashilaInView ? { opacity: 1, rotateY: 0, z: 0 } : { opacity: 0, rotateY: 90, z: -200 }}
                 transition={{ duration: 1, ease: "easeOut", type: "spring", stiffness: 50 }}
-                className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8 relative z-10"
+                className="w-full max-w-[95vw] mx-auto px-2 md:px-4 mb-8 relative z-10"
                 style={{ transformStyle: "preserve-3d" }}
             >
                 <div className="flex flex-col md:flex-row-reverse items-center gap-12">
@@ -247,17 +276,35 @@ const AboutSection: React.FC = () => {
                             initial={{ opacity: 0, x: 50 }}
                             animate={isTakshashilaInView ? { opacity: 1, x: 0 } : { opacity: 0, x: 50 }}
                             transition={{ duration: 0.8, delay: 0.3, ease: "easeOut" }}
-                            className="space-y-6 bg-gradient-to-bl from-black/40 via-black/30 to-amber-900/10 
-                         backdrop-blur-md p-8 rounded-2xl border border-amber-500/20
-                         shadow-2xl shadow-amber-500/10 hover:shadow-amber-500/30 transition-shadow duration-500"
+                            className="space-y-8 bg-black/40 backdrop-blur-2xl p-10 md:p-14 rounded-3xl 
+                         shadow-[0_0_50px_-12px_rgba(251,191,36,0.1)] hover:shadow-[0_0_70px_-12px_rgba(251,191,36,0.2)] 
+                         transition-all duration-700 h-full flex flex-col justify-center min-h-[550px]"
                             style={{ transform: "translateZ(50px)" }}
                         >
+                            {/* Gradient Border */}
+                            <div
+                                className="absolute inset-0 rounded-2xl pointer-events-none"
+                                style={{
+                                    padding: '1px',
+                                    background: 'linear-gradient(to bottom, #cfc09f 22%, #ffecb3 24%, #3a2c0f 26%, #99752d 27%, #ffecb3 40%, #bf953f 78%)',
+                                    mask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
+                                    maskComposite: 'exclude',
+                                    WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
+                                    WebkitMaskComposite: 'xor'
+                                }}
+                            />
                             <h2
-                                className="text-4xl font-lexend text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-yellow-500 to-amber-600 
-                           relative pb-4 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-16 after:h-1 
+                                className="text-4xl font-lexend relative pb-4 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-16 after:h-1 
                            after:bg-gradient-to-r after:from-amber-500 after:to-yellow-600 after:shadow-lg after:shadow-amber-500/50
                            drop-shadow-[0_0_15px_rgba(251,191,36,0.3)] transition-all duration-300 
                            hover:drop-shadow-[0_0_25px_rgba(251,191,36,0.5)]"
+                                style={{
+                                    background: "linear-gradient(to bottom, #cfc09f 22%, #ffecb3 24%, #3a2c0f 26%, #99752d 27%, #ffecb3 40%, #bf953f 78%)",
+                                    WebkitBackgroundClip: "text",
+                                    WebkitTextFillColor: "transparent",
+                                    backgroundClip: "text",
+                                    color: "transparent"
+                                }}
                             >
                                 TAKSHASHILA
                             </h2>
@@ -294,14 +341,25 @@ const AboutSection: React.FC = () => {
                             initial={{ opacity: 0, x: -50, rotateY: -15 }}
                             animate={isTakshashilaInView ? { opacity: 1, x: 0, rotateY: 0 } : { opacity: 0, x: -50, rotateY: -15 }}
                             transition={{ duration: 1, delay: 0.4, ease: "easeOut" }}
-                            className="rounded-xl overflow-hidden shadow-2xl shadow-amber-500/20 
-                         border-2 border-amber-500/30 hover:border-amber-500/60 transition-all duration-500
-                         hover:shadow-amber-500/40 relative"
+                            className="rounded-3xl overflow-hidden shadow-[0_0_50px_-12px_rgba(251,191,36,0.1)] 
+                         hover:shadow-[0_0_70px_-12px_rgba(251,191,36,0.2)] transition-all duration-700 relative"
                             style={{ transform: "translateZ(75px)" }}
                         >
+                            {/* Gradient Border */}
+                            <div
+                                className="absolute inset-0 rounded-3xl pointer-events-none z-20"
+                                style={{
+                                    padding: '1px',
+                                    background: 'linear-gradient(to bottom, #cfc09f 22%, #ffecb3 24%, #3a2c0f 26%, #99752d 27%, #ffecb3 40%, #bf953f 78%)',
+                                    mask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
+                                    maskComposite: 'exclude',
+                                    WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
+                                    WebkitMaskComposite: 'xor'
+                                }}
+                            />
                             {/* Golden glow effect */}
                             <div className="absolute inset-0 bg-gradient-to-tl from-amber-500/0 via-amber-500/5 to-yellow-500/10 pointer-events-none z-10" />
-                            <SlideShow images={takshashilaImages} height="400px" interval={4000} />
+                            <SlideShow images={takshashilaImages} height="550px" interval={4000} />
                         </motion.div>
                     </TiltCard>
                 </div>
