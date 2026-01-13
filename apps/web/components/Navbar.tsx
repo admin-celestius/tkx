@@ -3,7 +3,7 @@ import React, { useState } from "react";
 
 import { usePathname } from "next/navigation";
 
-const navItems = ["HOME", "TIMELINE", "ABOUT", "EVENTS", "WORKSHOPS", "GALLERY", "CONTACT"];
+const navItems = ["HOME", "ABOUT", "EVENTS", "CONTACT"];
 
 const NavBar = () => {
   const [activeIndex, setActiveIndex] = useState(0);

@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 
 const CountdownTimer = () => {
     // Target Date: March 20, 2026 09:00:00 IST
-    const targetDate = useMemo(() => new Date("2026-03-20T09:00:00+05:30").getTime(), []);
+    const targetDate = useMemo(() => new Date("2026-02-26T09:00:00+05:30").getTime(), []);
 
     const [timeLeft, setTimeLeft] = useState<{ days: number; hours: number; minutes: number; seconds: number }>({
         days: 0,
@@ -71,13 +71,27 @@ const CountdownTimer = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 1.5, duration: 1, ease: "easeOut" }}
-                className="flex flex-col items-center gap-2"
+                className="flex flex-col items-center gap-4"
             >
-                <div className="h-[1px] w-32 bg-gradient-to-r from-transparent via-amber-500/50 to-transparent" />
-                <div className="text-amber-500/60 text-[10px] md:text-xs font-light tracking-[0.6em] uppercase">
-                    March 20 — 22, 2026
+                <div className="flex items-center gap-6 group/text relative">
+                    <div className="h-[1px] w-8 md:w-16 bg-gradient-to-r from-transparent via-amber-500/30 to-transparent" />
+
+                    <div className="relative px-6 py-2 rounded-full border border-amber-500/20 group-hover/text:border-amber-500/50 transition-all duration-700 overflow-hidden shadow-[0_0_15px_rgba(212,175,55,0.05)] group-hover/text:shadow-[0_0_25px_rgba(212,175,55,0.15)]">
+                        {/* Shimmer effect on the border only could be complex, so let's use a subtle background glow */}
+                        <div className="absolute inset-0 bg-amber-500/0 group-hover/text:bg-amber-500/5 transition-colors duration-700" />
+
+                        <div className="relative text-gold-premium text-[11px] md:text-sm font-semibold tracking-[0.6em] md:tracking-[0.8em] uppercase transition-all duration-700 group-hover/text:tracking-[0.9em]">
+                            FEBRUARY 26 • COMMENCING ARRIVAL
+                        </div>
+                    </div>
+
+                    <div className="h-[1px] w-8 md:w-16 bg-gradient-to-l from-transparent via-amber-500/30 to-transparent" />
                 </div>
-                <div className="h-[1px] w-32 bg-gradient-to-r from-transparent via-amber-500/50 to-transparent" />
+
+                {/* Subtle Subtitle */}
+                <span className="text-white/30 text-[8px] md:text-[10px] tracking-[1.2em] uppercase font-light animate-pulse">
+
+                </span>
             </motion.div>
         </div>
     );
@@ -96,7 +110,7 @@ const TimeUnit = ({ value, label }: { value: string; label: string }) => {
                 {/* Animated Gradient Border */}
                 <div className="absolute inset-[-100%] bg-[conic-gradient(from_0deg,transparent,rgba(212,175,55,0.6),transparent,transparent,rgba(212,175,55,0.6))] animate-[spin_8s_linear_infinite] group-hover:animate-[spin_4s_linear_infinite] transition-all" />
 
-                <div className="relative flex flex-col items-center justify-center min-w-[100px] md:min-w-[170px] h-[110px] md:h-[160px] bg-black/95 backdrop-blur-3xl rounded-[14px] border border-white/10 overflow-hidden">
+                <div className="relative flex flex-col items-center justify-center min-w-[60px] md:min-w-[110px] h-[70px] md:h-[100px] bg-black/95 backdrop-blur-3xl rounded-[14px] border border-white/10 overflow-hidden">
                     {/* Inner Glow Effect */}
                     <div className="absolute inset-0 bg-gradient-to-br from-amber-500/15 via-transparent to-amber-500/25 pointer-events-none" />
                     <motion.div
@@ -109,7 +123,7 @@ const TimeUnit = ({ value, label }: { value: string; label: string }) => {
                     />
 
                     {/* Digit Container - Enhanced stability and visibility */}
-                    <div className="relative flex items-center justify-center tabular-nums leading-none text-6xl md:text-9xl">
+                    <div className="relative flex items-center justify-center tabular-nums leading-none text-4xl md:text-6xl">
                         {value.split("").map((digit, idx) => (
                             <div key={idx} className="relative w-[0.7em] md:w-[0.8em] h-[1.2em] md:h-[1.3em] flex items-center justify-center overflow-hidden">
                                 <AnimatePresence mode="popLayout" initial={false}>
@@ -177,6 +191,24 @@ const Separator = ({ title }: { title: string }) => (
             transition={{ duration: 2, repeat: Infinity, delay: 1 }}
             className="w-1.5 h-1.5 rounded-full bg-amber-400 shadow-[0_0_8px_rgba(251,191,36,0.5)]"
         />
+        <style jsx global>{`
+            .text-gold-premium {
+                background: linear-gradient(
+                    to bottom,
+                    #ffffff 0%,
+                    #ffecb3 20%,
+                    #d4af37 45%,
+                    #3a2c0f 50%,
+                    #99752d 55%,
+                    #ffecb3 80%,
+                    #bf953f 100%
+                );
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                background-clip: text;
+                color: transparent;
+            }
+        `}</style>
     </div>
 );
 

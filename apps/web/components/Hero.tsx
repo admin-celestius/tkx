@@ -44,8 +44,8 @@ export default function Hero() {
 
         const particles: Particle[] = [];
         const fogLayers: Fog[] = [];
-        const particleCount = 300; // Increased for space feel
-        const fogCount = 30; // Increased fog
+        const particleCount = 80; // Reduced for subtler feel
+        const fogCount = 10; // Reduced fog layers
 
         // Initialize particles with layers
         for (let i = 0; i < particleCount; i++) {
@@ -56,19 +56,19 @@ export default function Hero() {
 
             if (layerRandom < 0.6) {
                 // Background Stars (Stationary/Very Slow) - 60%
-                baseSpeedY = -(Math.random() * 0.05 + 0.01); // Almost stationary
-                size = Math.random() * 1.5 + 0.5; // Small
-                opacity = Math.random() * 0.4 + 0.1; // Dimmer
+                baseSpeedY = -(Math.random() * 0.04 + 0.01);
+                size = Math.random() * 1.0 + 0.2;
+                opacity = Math.random() * 0.15 + 0.05; // Dimmer
             } else if (layerRandom < 0.85) {
                 // Mid-ground Particles (Slow Floating) - 25%
-                baseSpeedY = -(Math.random() * 0.3 + 0.1);
-                size = Math.random() * 2 + 1;
-                opacity = Math.random() * 0.5 + 0.3;
+                baseSpeedY = -(Math.random() * 0.2 + 0.05);
+                size = Math.random() * 1.4 + 0.6;
+                opacity = Math.random() * 0.2 + 0.1;
             } else {
                 // Foreground Particles (Active) - 15%
-                baseSpeedY = -(Math.random() * 1.0 + 0.8); // Faster vertical movement
-                size = Math.random() * 3 + 1.5; // Larger
-                opacity = Math.random() * 0.6 + 0.4;
+                baseSpeedY = -(Math.random() * 0.8 + 0.4);
+                size = Math.random() * 1.8 + 1.0;
+                opacity = Math.random() * 0.25 + 0.15;
             }
 
             particles.push({

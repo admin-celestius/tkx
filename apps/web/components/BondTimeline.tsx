@@ -108,7 +108,7 @@ const milestones: Milestone[] = [
     }
 ];
 
-export default function BondTimeline() {
+export default function BondTimeline({ onClose }: { onClose?: () => void }) {
     const containerRef = useRef<HTMLDivElement>(null);
     const panelsRef = useRef<(HTMLDivElement | null)[]>([]);
     const progressRef = useRef<TimelineProgressHandle>(null);
@@ -466,6 +466,40 @@ export default function BondTimeline() {
                 style={{ opacity: 1 }}
             >
                 <TimelineProgress ref={progressRef} milestones={milestones} initialYear={initialState.year} initialFont={initialState.theme.font} />
+
+                {onClose && (
+                    <div className="fixed left-8 top-1/2 -translate-y-1/2 z-[110] flex flex-col items-center gap-4 pointer-events-none">
+                        <button
+                            onClick={onClose}
+                            className="pointer-events-auto group relative flex flex-col items-center gap-2"
+                        >
+                            <div className="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center group-hover:border-white/40 group-hover:bg-white/5 transition-all duration-300">
+                                <svg
+                                    width="16"
+                                    height="16"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    strokeWidth="2"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    className="text-white opacity-60 group-hover:opacity-100 transition-opacity"
+                                >
+                                    <path d="m15 18-6-6 6-6" />
+                                </svg>
+                            </div>
+                            <span className="text-[10px] text-white/40 tracking-[0.4em] uppercase font-light group-hover:text-white/80 transition-all duration-300 vertical-text">
+                                Back
+                            </span>
+                        </button>
+                        <style jsx>{`
+                            .vertical-text {
+                                writing-mode: vertical-rl;
+                                transform: rotate(180deg);
+                            }
+                        `}</style>
+                    </div>
+                )}
 
                 {milestones.map((item, i) => {
                     const type = item.transition;
