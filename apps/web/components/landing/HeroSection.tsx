@@ -24,12 +24,12 @@ const HeroSection = ({ onExplore }: HeroSectionProps) => {
                     initial={{ opacity: 0, scale: 0.8, x: '-50%', y: '-50%' }}
                     animate={{ opacity: 1, scale: 1, x: '-50%', y: '-50%' }}
                     transition={{ delay: 0.2, duration: 1.2, ease: "easeOut" }}
-                    className="absolute top-[40%] left-1/2 pointer-events-auto"
+                    className="absolute top-[35%] md:top-[40%] left-1/2 pointer-events-auto"
                 >
                     <img
                         src="/tk25-gold.svg"
                         alt="TK25 Gold Logo"
-                        className="w-72 md:w-180 h-auto"
+                        className="w-64 sm:w-80 md:w-[600px] lg:w-[800px] h-auto"
                     />
                 </motion.div>
 
@@ -38,7 +38,7 @@ const HeroSection = ({ onExplore }: HeroSectionProps) => {
                     initial={{ opacity: 0, scale: 0.9, x: '-50%' }}
                     animate={{ opacity: 1, scale: 1, x: '-50%' }}
                     transition={{ delay: 0.5, duration: 1, ease: "easeOut" }}
-                    className="absolute top-[52%] left-1/2 pointer-events-auto z-20"
+                    className="absolute top-[55%] md:top-[52%] left-1/2 pointer-events-auto z-20"
                 >
                     <CountdownTimer onExplore={onExplore} />
                 </motion.div>

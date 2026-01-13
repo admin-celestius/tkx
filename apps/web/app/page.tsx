@@ -1,35 +1,56 @@
-import LoadingPage from "@/components/LoadingScreen";
-import Hero from "@/components/Hero";
-import Carousel from "@/components/Carousel";
-import Footer from "@/components/Footer";
-import AboutSection from "@/components/landing/AboutSection";
-import ContactSection from "@/components/landing/ContactSection";
+'use client';
 
-const SLIDES = [
-  { image: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=800&auto=format&fit=crop", title: "Retro Tech" },
-  { image: "https://images.unsplash.com/photo-1550684848-fac1c5b4e853?q=80&w=800&auto=format&fit=crop", title: "Neon City" },
-  { image: "https://images.unsplash.com/photo-1546484475-7f7bd55792da?q=80&w=800&auto=format&fit=crop", title: "Cyber Punk" },
-  { image: "https://images.unsplash.com/photo-1518544806308-c8f481c5f39e?q=80&w=800&auto=format&fit=crop", title: "Synthwave" },
-  { image: "https://images.unsplash.com/photo-1563089145-599997674d42?q=80&w=800&auto=format&fit=crop", title: "Abstract" },
-  { image: "https://images.unsplash.com/photo-1620641788427-b9f4dbf278d1?q=80&w=800&auto=format&fit=crop", title: "Future" },
-];
-export default function Home() {
+import React from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import LandingPage from '../components/landing/LandingPage';
+import LoadingRemastered from '../components/landing/LoadingRemastered';
+
+export default function Page() {
+  const [isLaunched, setIsLaunched] = React.useState(false);
+  const [isCheckingSession, setIsCheckingSession] = React.useState(true);
+
+  React.useEffect(() => {
+    const hasLoaded = sessionStorage.getItem('tkx-loaded');
+    if (hasLoaded) {
+      setIsLaunched(true);
+    }
+    setIsCheckingSession(false);
+  }, []);
+
+  const handleFinished = () => {
+    sessionStorage.setItem('tkx-loaded', 'true');
+    setIsLaunched(true);
+  };
+
+  if (isCheckingSession) {
+    return <div className="min-h-screen bg-black" />; // Minimal blank screen during check
+  }
+
   return (
-    <>
-      <LoadingPage />
-      <Hero />
-      <section id="about">
-        <AboutSection />
-      </section>
-      <section id="contact">
-        <ContactSection />
-      </section>
-      <section>
-        <Carousel slides={SLIDES} />
-      </section>
-      <section>
-        <Footer />
-      </section>
-    </>
+    <main className="relative min-h-screen bg-black">
+      <AnimatePresence mode="wait">
+        {!isLaunched ? (
+          <motion.div
+            key="loader"
+            initial={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.5 }}
+            className="fixed inset-0 z-50"
+          >
+            <LoadingRemastered onFinished={handleFinished} />
+          </motion.div>
+        ) : (
+          <motion.div
+            key="landing"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 1 }}
+            className="relative z-0"
+          >
+            <LandingPage />
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </main>
   );
 }

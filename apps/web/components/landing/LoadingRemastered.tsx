@@ -11,15 +11,23 @@ export default function LoadingRemastered({ onFinished }: { onFinished?: () => v
 
 function HybridXLoader({ onComplete }: { onComplete?: () => void }) {
     const [isLoading, setIsLoading] = useState(true);
+    const [isMobile, setIsMobile] = useState(false);
     const [stage, setStage] = useState<
         | "logo"
         | "logo-hold"
         | "flip"
         | "hold"
         | "shrink-out"
+        | "descend"
     >("logo");
 
     useEffect(() => {
+        const checkMobile = () => {
+            setIsMobile(window.innerWidth < 768);
+        };
+        checkMobile();
+        window.addEventListener("resize", checkMobile);
+
         const logoHoldTimer = setTimeout(() => setStage("logo-hold"), 2500);
         const flipTimer = setTimeout(() => setStage("flip"), 3000);
         const holdTimer = setTimeout(() => setStage("hold"), 4000);
@@ -35,6 +43,7 @@ function HybridXLoader({ onComplete }: { onComplete?: () => void }) {
         }, 5000);
 
         return () => {
+            window.removeEventListener("resize", checkMobile);
             clearTimeout(logoHoldTimer);
             clearTimeout(flipTimer);
             clearTimeout(holdTimer);
@@ -44,14 +53,14 @@ function HybridXLoader({ onComplete }: { onComplete?: () => void }) {
 
     const logoVariant: Variants = {
         logo: {
-            scale: 1,
+            scale: isMobile ? 0.7 : 1,
             opacity: 1,
             rotateY: 0,
             filter: "brightness(1)",
             transition: { duration: 0 }
         },
         "logo-hold": {
-            scale: 1,
+            scale: isMobile ? 0.7 : 1,
             rotateY: 0,
             opacity: 1,
             filter: "brightness(1)",
@@ -59,7 +68,7 @@ function HybridXLoader({ onComplete }: { onComplete?: () => void }) {
         },
         flip: {
             rotateY: 90,
-            scale: 1.1,
+            scale: isMobile ? 0.8 : 1.1,
             opacity: 0,
             filter: "brightness(2)",
             transition: { duration: 0.5, ease: "easeIn" }
@@ -69,20 +78,20 @@ function HybridXLoader({ onComplete }: { onComplete?: () => void }) {
     const tkxVariant: Variants = {
         initial: {
             rotateY: -90,
-            scale: 1.1,
+            scale: isMobile ? 0.8 : 1.1,
             opacity: 0,
             filter: "brightness(2)"
         },
         flip: {
             rotateY: 0,
-            scale: 1,
+            scale: isMobile ? 0.7 : 1,
             opacity: 1,
             filter: "brightness(1)",
             transition: { duration: 0.5, ease: "easeOut", delay: 0.5 }
         },
         hold: {
             rotateY: 0,
-            scale: 1,
+            scale: isMobile ? 0.7 : 1,
             opacity: 1,
             clipPath: "inset(0% 0% 0% 0%)",
             filter: "brightness(1)",
@@ -90,7 +99,7 @@ function HybridXLoader({ onComplete }: { onComplete?: () => void }) {
         },
         "shrink-out": {
             rotateY: 0,
-            scale: 0.8,
+            scale: isMobile ? 0.5 : 0.8,
             clipPath: "inset(50% 0% 50% 0%)",
             opacity: 0,
             transition: {
@@ -107,12 +116,12 @@ function HybridXLoader({ onComplete }: { onComplete?: () => void }) {
     const boxContainerVariant: Variants = {
         hidden: {
             opacity: 0,
-            scale: 0.8,
+            scale: isMobile ? 0.6 : 0.8,
             transition: { duration: 0.2 }
         },
         visible: {
             opacity: 1,
-            scale: 1.3,
+            scale: isMobile ? 1 : 1.3,
             transition: {
                 opacity: { duration: 1.5, ease: "easeInOut" },
                 scale: { duration: 1.5, ease: "easeInOut" }
@@ -120,7 +129,7 @@ function HybridXLoader({ onComplete }: { onComplete?: () => void }) {
         },
         "descend": {
             opacity: 1,
-            scale: 1.3,
+            scale: isMobile ? 1 : 1.3,
             y: ["0vh", "29.7vh"], // Precise alignment with Hero button center
             transition: {
                 opacity: { duration: 0.5 },
@@ -142,7 +151,6 @@ function HybridXLoader({ onComplete }: { onComplete?: () => void }) {
     const showLogo = stage === "logo" || stage === "logo-hold" || stage === "flip";
     const showTkx = stage === "flip" || stage === "hold" || stage === "shrink-out";
     const showBox = stage === "shrink-out";
-    const isDescent = false;
 
     return (
         <div className="fixed inset-0 z-[9999] pointer-events-none">
@@ -167,13 +175,13 @@ function HybridXLoader({ onComplete }: { onComplete?: () => void }) {
                             transition={{ duration: 0.5 }}
                             exit={{ opacity: 0 }}
                         >
-                            {[...Array(35)].map((_, i) => (
+                            {[...Array(isMobile ? 15 : 35)].map((_, i) => (
                                 <motion.div
                                     key={i}
                                     className="absolute rounded-full"
                                     style={{
-                                        width: Math.random() * 3 + 1 + "px",
-                                        height: Math.random() * 3 + 1 + "px",
+                                        width: Math.random() * (isMobile ? 2 : 3) + 1 + "px",
+                                        height: Math.random() * (isMobile ? 2 : 3) + 1 + "px",
                                         background: i % 3 === 0 ? "#8B6914" : i % 3 === 1 ? "#6B4F0A" : "#4a3000",
                                         left: Math.random() * 100 + "%",
                                         top: Math.random() * 100 + "%",
@@ -185,7 +193,7 @@ function HybridXLoader({ onComplete }: { onComplete?: () => void }) {
                             ))}
                         </motion.div>
 
-                        <div className="relative w-[300px] h-[300px] flex items-center justify-center" style={{ perspective: "1000px" }}>
+                        <div className="relative w-[200px] md:w-[300px] h-[200px] md:h-[300px] flex items-center justify-center" style={{ perspective: "1000px" }}>
                             {/* LOGO */}
                             <AnimatePresence mode="popLayout">
                                 {showLogo && (
@@ -197,7 +205,7 @@ function HybridXLoader({ onComplete }: { onComplete?: () => void }) {
                                         exit={{ opacity: 0, scale: 0.5 }}
                                         className="absolute z-20"
                                     >
-                                        <img src="/tk-logo-animated.svg" className="w-36 h-36" alt="Logo" />
+                                        <img src="/tk-logo-animated.svg" className="w-24 md:w-36 h-24 md:h-36" alt="Logo" />
                                     </motion.div>
                                 )}
                             </AnimatePresence>
@@ -213,7 +221,7 @@ function HybridXLoader({ onComplete }: { onComplete?: () => void }) {
                                         exit={{ opacity: 0 }}
                                         className="absolute z-10"
                                     >
-                                        <img src="/test-x.svg" className="w-[140px]" alt="TKX" />
+                                        <img src="/test-x.svg" className="w-[100px] md:w-[140px]" alt="TKX" />
                                     </motion.div>
                                 )}
                             </AnimatePresence>
@@ -225,7 +233,7 @@ function HybridXLoader({ onComplete }: { onComplete?: () => void }) {
                                 initial="hidden"
                                 animate={stage}
                                 className="absolute z-50 flex items-center justify-center pointer-events-none"
-                                style={{ width: "140px", height: "140px" }}
+                                style={{ width: isMobile ? "100px" : "140px", height: isMobile ? "100px" : "140px" }}
                             >
                                 <svg width="100%" height="100%" viewBox="0 0 200 200">
                                     <defs>

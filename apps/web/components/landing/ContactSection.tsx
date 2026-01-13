@@ -83,7 +83,7 @@ const coordinators = [
 const ContactSection = () => {
     const [isMapActive, setIsMapActive] = useState(false)
     return (
-        <section className="min-h-screen py-20 px-4 md:px-8 relative bg-black/95 overflow-hidden flex flex-col items-center justify-center">
+        <section id="contact" className="min-h-screen py-20 px-4 md:px-8 relative bg-black/95 overflow-hidden flex flex-col items-center justify-center">
             {/* Subtle gold gradient overlay */}
             <div className="absolute inset-0 bg-gradient-to-b from-amber-900/5 via-transparent to-amber-900/5 pointer-events-none" />
 

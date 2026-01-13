@@ -75,7 +75,7 @@ const CountdownTimer = ({ onExplore }: { onExplore?: () => void }) => {
                         <motion.button
                             onClick={() => {
                                 if (onExplore) onExplore();
-                                window.location.href = '/timeline';
+                                window.location.href = '/test/timeline';
                             }}
                             className="group/btn key-hover relative w-[200px] h-[200px] bg-transparent transition-all duration-500 flex items-center justify-center pointer-events-auto"
                         >

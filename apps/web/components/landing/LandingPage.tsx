@@ -13,7 +13,6 @@ const LandingPage = () => {
 
     return (
         <div className="w-full h-full overflow-x-hidden bg-black">
-            <NavBar />
             {!showTimeline ? (
                 <HeroSection onExplore={() => setShowTimeline(true)} />
             ) : (

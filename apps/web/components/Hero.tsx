@@ -44,8 +44,9 @@ export default function Hero() {
 
         const particles: Particle[] = [];
         const fogLayers: Fog[] = [];
-        const particleCount = 80; // Reduced for subtler feel
-        const fogCount = 10; // Reduced fog layers
+        const isMobile = window.innerWidth < 768;
+        const particleCount = isMobile ? 40 : 80; // Reduced for performance on mobile
+        const fogCount = isMobile ? 5 : 10; // Reduced fog layers on mobile
 
         // Initialize particles with layers
         for (let i = 0; i < particleCount; i++) {
@@ -57,17 +58,17 @@ export default function Hero() {
             if (layerRandom < 0.6) {
                 // Background Stars (Stationary/Very Slow) - 60%
                 baseSpeedY = -(Math.random() * 0.04 + 0.01);
-                size = Math.random() * 1.0 + 0.2;
+                size = Math.random() * (isMobile ? 0.7 : 1.0) + 0.2;
                 opacity = Math.random() * 0.15 + 0.05; // Dimmer
             } else if (layerRandom < 0.85) {
                 // Mid-ground Particles (Slow Floating) - 25%
                 baseSpeedY = -(Math.random() * 0.2 + 0.05);
-                size = Math.random() * 1.4 + 0.6;
+                size = Math.random() * (isMobile ? 1.0 : 1.4) + 0.6;
                 opacity = Math.random() * 0.2 + 0.1;
             } else {
                 // Foreground Particles (Active) - 15%
                 baseSpeedY = -(Math.random() * 0.8 + 0.4);
-                size = Math.random() * 1.8 + 1.0;
+                size = Math.random() * (isMobile ? 1.2 : 1.8) + 1.0;
                 opacity = Math.random() * 0.25 + 0.15;
             }
 
@@ -89,7 +90,7 @@ export default function Hero() {
             fogLayers.push({
                 x: Math.random() * canvas.width,
                 y: canvas.height + Math.random() * 500, // Start below screen
-                size: Math.random() * 200 + 100,
+                size: Math.random() * (isMobile ? 120 : 200) + 80,
                 speedY: -(Math.random() * 25 + 15), // Much faster upward speed (15-40px per frame)
                 opacity: 0, // Start invisible
                 drift: (Math.random() - 0.5) * 0.1, // Less drift for cleaner look
