@@ -1,7 +1,6 @@
 "use client";
-import { useState, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import gsap from "gsap";
-import { useGSAP } from "@gsap/react"; // If you don't have this, use useEffect instead
 
 interface IntroZoomProps {
     onComplete: () => void;
@@ -11,24 +10,28 @@ export default function IntroZoom({ onComplete }: IntroZoomProps) {
     const container = useRef(null);
     const [visible, setVisible] = useState(true);
 
-    useGSAP(() => {
-        const tl = gsap.timeline({
-            onComplete: () => {
-                setVisible(false);
-                onComplete();
-            }
-        });
+    useEffect(() => {
+        const ctx = gsap.context(() => {
+            const tl = gsap.timeline({
+                onComplete: () => {
+                    setVisible(false);
+                    onComplete();
+                }
+            });
 
-        // Initialize with full coverage
-        gsap.set(container.current, { clipPath: "circle(150% at 50% 50%)" });
+            // Initialize with full coverage
+            gsap.set(container.current, { clipPath: "circle(150% at 50% 50%)" });
 
-        tl.to(".intro-text", { opacity: 1, duration: 1, stagger: 0.2 })
-            .to(".intro-text", { opacity: 0, duration: 0.5, delay: 0.5 })
-            .fromTo(container.current,
-                { clipPath: "circle(150% at 50% 50%)" },
-                { clipPath: "circle(0% at 50% 50%)", duration: 1.5, ease: "power4.inOut" }
-            );
-    }, { scope: container });
+            tl.to(".intro-text", { opacity: 1, duration: 1, stagger: 0.2 })
+                .to(".intro-text", { opacity: 0, duration: 0.5, delay: 0.5 })
+                .fromTo(container.current,
+                    { clipPath: "circle(150% at 50% 50%)" },
+                    { clipPath: "circle(0% at 50% 50%)", duration: 1.5, ease: "power4.inOut" }
+                );
+        }, container);
+
+        return () => ctx.revert(); // cleanup
+    }, [onComplete]);
     // WAIT. "circle(0%)" CLOSES it. If opacity is 1 (bg-black), closing it makes it DISAPPEAR?
     // No, clipPath clips visible region.
     // If clipPath is circle(0%), we see NOTHING of the black div.
