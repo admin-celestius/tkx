@@ -76,18 +76,35 @@ const CometCursor = () => {
 
         // Hover State
         let isHovering = false;
+        let isKeyHovering = false;
+        let targetCenter = { x: 0, y: 0 };
 
         const checkHover = (e: MouseEvent) => {
             const target = e.target as HTMLElement;
             isHovering = !!target.closest('a, button, input, select, textarea, [role="button"], .cursor-hover');
+
+            const keyLock = target.closest('.key-hover') as HTMLElement;
+            if (keyLock) {
+                const rect = keyLock.getBoundingClientRect();
+                targetCenter = {
+                    x: rect.left + rect.width / 2,
+                    y: rect.top + rect.height / 2
+                };
+                isKeyHovering = true;
+            } else {
+                isKeyHovering = false;
+            }
         };
 
         const onMouseOut = (e: MouseEvent) => {
             const related = e.relatedTarget as HTMLElement;
             if (!related) {
                 isHovering = false;
+                isKeyHovering = false;
             } else {
                 isHovering = !!related.closest('a, button, input, select, textarea, [role="button"], .cursor-hover');
+                const keyLock = related.closest('.key-hover');
+                isKeyHovering = !!keyLock;
             }
         };
 
@@ -103,7 +120,7 @@ const CometCursor = () => {
         const render = () => {
             ctx.clearRect(0, 0, width, height);
 
-            // 1. Strict Position Lock (No Physics/Smoothing)
+            // 1. Position: Strictly follow mouse (No Magnetic Pull)
             pos.x = mouse.x;
             pos.y = mouse.y;
 
@@ -228,7 +245,10 @@ const CometCursor = () => {
             ctx.save();
             ctx.translate(pos.x, pos.y);
             ctx.rotate(currentRotation);
-            ctx.scale(currentScale, currentScale);
+
+            // Pulsing scale if hovering over lock
+            const hoverScaleBonus = isKeyHovering ? (1 + Math.sin(Date.now() / 150) * 0.1) : 1;
+            ctx.scale(currentScale * hoverScaleBonus, currentScale * hoverScaleBonus);
 
             const starSize = 12;
             const innerSize = 2;
@@ -241,8 +261,8 @@ const CometCursor = () => {
             ctx.fillStyle = starGrad;
             ctx.strokeStyle = 'rgba(255, 236, 179, 0.5)';
             ctx.lineWidth = 1;
-            ctx.shadowBlur = 10;
-            ctx.shadowColor = 'rgba(255, 236, 179, 0.5)';
+            ctx.shadowBlur = isKeyHovering ? 20 : 10;
+            ctx.shadowColor = 'rgba(255, 236, 179, 0.8)';
 
             ctx.beginPath();
             for (let i = 0; i < 4; i++) {

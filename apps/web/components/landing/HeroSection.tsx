@@ -17,61 +17,34 @@ const HeroSection = ({ onExplore }: HeroSectionProps) => {
                 <Hero />
             </div>
 
-            {/* Content Layer */}
-            <div className="relative z-10 h-full w-full flex flex-col items-center justify-center pointer-events-none">
-                <div className="pointer-events-auto">
-                    <CountdownTimer />
-                </div>
-
-                {/* Explore Timeline Button - Repositioned to Bottom Left & Redesigned */}
+            {/* Centralized Branding Layer */}
+            <div className="relative z-10 h-full w-full pointer-events-none">
+                {/* Logo centered higher up */}
                 <motion.div
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 2, duration: 1 }}
-                    className="absolute bottom-12 left-12 z-[30] pointer-events-auto"
+                    initial={{ opacity: 0, scale: 0.8, x: '-50%', y: '-50%' }}
+                    animate={{ opacity: 1, scale: 1, x: '-50%', y: '-50%' }}
+                    transition={{ delay: 0.2, duration: 1.2, ease: "easeOut" }}
+                    className="absolute top-[40%] left-1/2 pointer-events-auto"
                 >
-                    <button
-                        onClick={onExplore}
-                        className="group relative px-10 py-4 bg-transparent transition-all duration-500 flex items-center gap-4"
-                    >
-                        {/* Outer Premium Border with Glow */}
-                        <div className="absolute inset-0 border border-amber-500/30 rounded-full group-hover:border-amber-500/60 transition-all duration-500 shadow-[0_0_15px_rgba(212,175,55,0.1)] group-hover:shadow-[0_0_25px_rgba(212,175,55,0.2)]" />
-
-                        {/* Sliding Glow Background */}
-                        <div className="absolute inset-0 rounded-full bg-gradient-to-r from-amber-500/0 via-amber-500/10 to-amber-500/0 -translate-x-full group-hover:translate-x-0 transition-transform duration-700" />
-
-                        {/* Animated Pulse Ring */}
-                        <div className="absolute inset-[-4px] border border-amber-500/10 rounded-full animate-pulse group-hover:border-amber-500/20" />
-
-                        {/* Text Label with Premium Gold */}
-                        <span className="relative text-gold-premium text-xs md:text-sm tracking-[0.4em] uppercase font-bold transition-all duration-500 group-hover:tracking-[0.5em] drop-shadow-[0_0_8px_rgba(212,175,55,0.4)]">
-                            10 Years of Takshashila
-                        </span>
-
-                        {/* Interactive Arrow Indicator */}
-                        <motion.div
-                            animate={{ x: [0, 5, 0] }}
-                            transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-                            className="relative"
-                        >
-                            <svg
-                                width="20"
-                                height="20"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                strokeWidth="2"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                className="text-amber-500"
-                            >
-                                <path d="M5 12h14M12 5l7 7-7 7" />
-                            </svg>
-                        </motion.div>
-                    </button>
+                    <img
+                        src="/tk25-gold.svg"
+                        alt="TK25 Gold Logo"
+                        className="w-72 md:w-180 h-auto"
+                    />
                 </motion.div>
 
-                <style jsx>{`
+                {/* Timer positioned slightly higher */}
+                <motion.div
+                    initial={{ opacity: 0, scale: 0.9, x: '-50%' }}
+                    animate={{ opacity: 1, scale: 1, x: '-50%' }}
+                    transition={{ delay: 0.5, duration: 1, ease: "easeOut" }}
+                    className="absolute top-[52%] left-1/2 pointer-events-auto z-20"
+                >
+                    <CountdownTimer onExplore={onExplore} />
+                </motion.div>
+            </div>
+
+            <style jsx>{`
                 .text-gold-premium {
                     background: linear-gradient(
                         to bottom,
@@ -90,22 +63,7 @@ const HeroSection = ({ onExplore }: HeroSectionProps) => {
                 }
             `}</style>
 
-                {/* Scroll Indicator or tagline could go here */}
-            </div>
-
-            {/* Top Right Logo */}
-            <motion.div
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 2.5, duration: 1 }}
-                className="absolute top-12 right-12 z-20"
-            >
-                <img
-                    src="/tk25-gold.svg"
-                    alt="TK25 Gold Logo"
-                    className="w-36 md:w-50 h-auto opacity-80"
-                />
-            </motion.div>
+            {/* Scroll Indicator or tagline could go here */}
         </section>
     );
 };
