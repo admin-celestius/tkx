@@ -3,12 +3,9 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence, Variants } from "framer-motion";
 
-export default function LoadingRemastered() {
-    // We use a key to force-remount the animation for the demo loop
-    const [loopKey, setLoopKey] = useState(0);
-
+export default function LoadingRemastered({ onFinished }: { onFinished?: () => void }) {
     return (
-        <HybridXLoader key={loopKey} onComplete={() => setLoopKey(k => k + 1)} />
+        <HybridXLoader onComplete={onFinished} />
     );
 }
 
@@ -19,37 +16,34 @@ function HybridXLoader({ onComplete }: { onComplete?: () => void }) {
         | "flip"
         | "hold"
         | "shrink-out"
+        | "ready-to-launch"
+        | "launching"
     >("logo");
 
     useEffect(() => {
-        // --- TIMELINE ---
-        // 0-3s:   Logo enters
-        // 3.0s:   Logo Hold
-        // 3.5s:   Logo Flips Out / TKX Flips In
-        // 6.0s:   Hold TKX
-        // 7.5s:   ZOOM START (X flies into camera)
-        // 8.8s:   Unmount (Shortened slightly to sync with the zoom impact)
-
         const logoHoldTimer = setTimeout(() => setStage("logo-hold"), 3000);
         const flipTimer = setTimeout(() => setStage("flip"), 3500);
         const holdTimer = setTimeout(() => setStage("hold"), 4500);
         const shrinkTimer = setTimeout(() => setStage("shrink-out"), 5500);
-
-        // Loop restart instead of unmount
-        const endTimer = setTimeout(() => {
-            if (onComplete) onComplete();
-        }, 9000); // Give it a bit more time to sit in the "zoomed" state (empty) before looping
+        const readyTimer = setTimeout(() => setStage("ready-to-launch"), 7000);
 
         return () => {
             clearTimeout(logoHoldTimer);
             clearTimeout(flipTimer);
             clearTimeout(holdTimer);
             clearTimeout(shrinkTimer);
-            clearTimeout(endTimer);
+            clearTimeout(readyTimer);
         };
-    }, [onComplete]);
+    }, []);
 
-    // --- VARIANTS ---
+    const handleLaunch = () => {
+        if (stage === "ready-to-launch") {
+            setStage("launching");
+            setTimeout(() => {
+                if (onComplete) onComplete();
+            }, 1000); // Slightly faster
+        }
+    };
 
     const logoVariant: Variants = {
         logo: {
@@ -97,32 +91,58 @@ function HybridXLoader({ onComplete }: { onComplete?: () => void }) {
             filter: "brightness(1)",
             transition: { duration: 0.5 }
         },
-        // --- SHRINK OUT ---
         "shrink-out": {
             rotateY: 0,
-            scale: 1,
+            scale: 0.8,
             clipPath: "inset(50% 0% 50% 0%)",
-            opacity: 1,
-            filter: "brightness(1)",
+            opacity: 0,
             transition: {
                 duration: 1.5,
                 ease: "easeInOut"
             }
+        },
+        "ready-to-launch": {
+            opacity: 0,
+            transition: { duration: 0.5 }
+        },
+        launching: {
+            opacity: 0,
+            transition: { duration: 0.5 }
         }
     };
 
     const boxContainerVariant: Variants = {
         hidden: {
             opacity: 0,
-            scale: 1,
+            scale: 0.8,
             transition: { duration: 0.2 }
         },
         visible: {
             opacity: 1,
-            scale: 1.5,
+            scale: 1.3,
             transition: {
-                opacity: { duration: 0.2 },
-                scale: { delay: 1.5, duration: 0.5, ease: "easeInOut" }
+                opacity: { duration: 1.5, ease: "easeInOut" },
+                scale: { duration: 1.5, ease: "easeInOut" }
+            }
+        },
+        "ready-to-launch": {
+            opacity: 1,
+            scale: [1.3, 1.35, 1.3],
+            transition: {
+                scale: {
+                    duration: 2.5,
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                }
+            }
+        },
+        launching: {
+            scale: 1.5,
+            opacity: 0,
+            filter: "blur(20px)",
+            transition: {
+                duration: 0.8,
+                ease: "easeOut"
             }
         }
     };
@@ -138,33 +158,22 @@ function HybridXLoader({ onComplete }: { onComplete?: () => void }) {
 
     const showLogo = stage === "logo" || stage === "logo-hold" || stage === "flip";
     const showTkx = stage === "flip" || stage === "hold" || stage === "shrink-out";
-    const showBox = stage === "shrink-out";
-
-    // Helper to detect if we are in the final stage
-    const isShrinking = stage === "shrink-out";
+    const showBox = stage === "shrink-out" || stage === "ready-to-launch" || stage === "launching";
+    const isInteractive = stage === "ready-to-launch";
 
     return (
-        <div className="fixed inset-0 flex items-center justify-center bg-neutral-900 overflow-hidden">
-            {/* BACKGROUND LAYER: 
-              Fades to transparent slightly BEFORE the X is finished shrinking.
-            */}
+        <div className={`fixed inset-0 flex items-center justify-center bg-black overflow-hidden cursor-none`}>
+            {/* Background layers */}
             <motion.div
-                className="absolute inset-0 bg-black"
-            // Kept solid during defill
+                className="absolute inset-0 bg-neutral-900"
+                animate={{ opacity: stage === "launching" ? 0 : 1 }}
+                transition={{ duration: 1 }}
             />
 
-            <motion.div
-                className="absolute inset-0"
-                // Kept visible
-                style={{
-                    background: "radial-gradient(ellipse at center, transparent 0%, rgba(0,0,0,0.4) 70%, rgba(0,0,0,0.8) 100%)"
-                }}
-            />
-
-            {/* PARTICLES (Fade out cleanly before shrink hits) */}
+            {/* PARTICLES */}
             <motion.div
                 className="absolute inset-0 pointer-events-none overflow-hidden"
-                animate={{ opacity: isShrinking ? 0 : 1 }}
+                animate={{ opacity: (stage === "ready-to-launch" || stage === "launching") ? 0 : 1 }}
                 transition={{ duration: 0.5 }}
             >
                 {[...Array(35)].map((_, i) => (
@@ -185,107 +194,88 @@ function HybridXLoader({ onComplete }: { onComplete?: () => void }) {
                 ))}
             </motion.div>
 
-            <div
-                className="relative w-[300px] h-[300px] flex items-center justify-center"
-                style={{ perspective: "1000px" }}
-            >
-                {/* LOGO */}
-                <AnimatePresence>
+            {/* Pulsing Glow behind box */}
+            <AnimatePresence>
+                {isInteractive && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 0.4 }}
+                        exit={{ opacity: 0 }}
+                        className="absolute w-[400px] h-[400px] bg-amber-500/20 rounded-full blur-[100px]"
+                    />
+                )}
+            </AnimatePresence>
+
+            <div className="relative w-[300px] h-[300px] flex items-center justify-center" style={{ perspective: "1000px" }}>
+                <AnimatePresence mode="popLayout">
                     {showLogo && (
                         <motion.div
                             key="logo-container"
-                            className="absolute flex items-center justify-center z-10"
                             variants={logoVariant}
                             initial="logo"
                             animate={stage}
-                            style={{ backfaceVisibility: "hidden" }}
+                            className="absolute z-20"
                         >
-                            <motion.img
-                                src="/tk-logo-animated.svg"
-                                alt="Takshashila Logo"
-                                className="w-36 h-36 object-contain relative z-20"
-                                style={{
-                                    mixBlendMode: "screen",
-                                    filter: "contrast(1.3) brightness(0.9)",
-                                    transform: "translateZ(0)"
-                                }}
-                            />
+                            <img src="/tk-logo-animated.svg" className="w-36 h-36" alt="Logo" />
                         </motion.div>
                     )}
                 </AnimatePresence>
 
-                {/* START BOX - INLINED SVG FOR GRANULAR CONTROL */}
+                <AnimatePresence mode="popLayout">
+                    {showTkx && (
+                        <motion.div
+                            key="tkx-container"
+                            variants={tkxVariant}
+                            initial="initial"
+                            animate={stage}
+                            exit="ready-to-launch"
+                            className="absolute z-10"
+                        >
+                            <img src="/test-x.svg" className="w-[140px]" alt="TKX" />
+                        </motion.div>
+                    )}
+                </AnimatePresence>
+
                 <motion.div
                     key="box-container"
-                    className="absolute flex items-center justify-center z-10 pointer-events-none"
                     variants={boxContainerVariant}
                     initial="hidden"
-                    animate={showBox ? "visible" : "hidden"}
-                    style={{
-                        width: "140px",
-                        height: "140px",
-                        filter: "drop-shadow(0 0 10px rgba(198, 166, 100, 0.4))"
-                    }}
+                    animate={stage}
+                    onClick={handleLaunch}
+                    className={`absolute z-50 flex items-center justify-center ${isInteractive ? 'pointer-events-auto cursor-pointer' : 'pointer-events-none'}`}
+                    style={{ width: "140px", height: "140px" }}
                 >
-                    <svg width="100%" height="100%" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                    <svg width="100%" height="100%" viewBox="0 0 200 200">
                         <defs>
                             <linearGradient id="goldGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                                <stop offset="0%" stop-color="#785A14" />
-
-                                <stop offset="50%" stop-color="#F5D76E" />
-
-                                <stop offset="100%" stop-color="#B98C23" />
+                                <stop offset="0%" stopColor="#785A14" />
+                                <stop offset="50%" stopColor="#F5D76E" />
+                                <stop offset="100%" stopColor="#B98C23" />
                             </linearGradient>
-                            <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
-                                <feGaussianBlur in="SourceAlpha" stdDeviation="2" />
-                                <feOffset dx="2" dy="2" result="offsetblur" />
-                                <feComponentTransfer>
-                                    <feFuncA type="linear" slope="0.3" />
-                                </feComponentTransfer>
-                                <feMerge>
-                                    <feMergeNode />
-                                    <feMergeNode in="SourceGraphic" />
-                                </feMerge>
+                            <filter id="shadow">
+                                <feGaussianBlur stdDeviation="0.5" />
                             </filter>
                         </defs>
-
-                        {/* OUTER BOX - Shows immediately (just opacity fade in with container) */}
-                        <path
-                            d="M 75 100 L 95 80 L 115 100 L 95 120 Z"
-                            fill="url(#goldGradient)"
-                            filter="url(#shadow)"
-                        />
-
-                        {/* CENTER SHAPE - Animates in LATER */}
+                        <path d="M 75 100 L 95 80 L 115 100 L 95 120 Z" fill="url(#goldGradient)" filter="url(#shadow)" />
                         <motion.path
                             d="M 79 100 L 95 84 L 111 100 L 110 101 L 95 86 L 80 101 L 79 100 Z"
                             fill="black"
                             variants={centerShapeVariant}
+                            initial="hidden"
+                            animate={showBox ? "visible" : "hidden"}
                         />
                     </svg>
-                </motion.div>
 
-                {/* TKX - ZOOM THROUGH */}
-                {showTkx && (
-                    <motion.div
-                        key="tkx-container"
-                        className="absolute flex items-center justify-center z-10 pointer-events-none"
-                        variants={tkxVariant}
-                        initial="initial"
-                        animate={stage}
-                        style={{ backfaceVisibility: "hidden" }}
-                    >
-                        <motion.img
-                            src="/test-x.svg"
-                            alt="TKX"
-                            className="w-[140px] object-contain"
-                            style={{
-                                transform: "translateZ(0)",
-                                willChange: "transform, opacity"
-                            }}
-                        />
-                    </motion.div>
-                )}
+                    {isInteractive && (
+                        <motion.div
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            className="absolute top-40 w-max text-amber-500/60 text-[10px] tracking-[0.8em] uppercase font-light"
+                        >
+                            Click to Explore
+                        </motion.div>
+                    )}
+                </motion.div>
             </div>
         </div>
     );

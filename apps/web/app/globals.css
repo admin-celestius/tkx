@@ -5,13 +5,14 @@ body::-webkit-scrollbar {
     display: none;
 }
 
+*,
 body,
 a,
 button,
 input,
 select,
 textarea {
-    cursor: none;
+    cursor: none !important;
 }
 
 body {
