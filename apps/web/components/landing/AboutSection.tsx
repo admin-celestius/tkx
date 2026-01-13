@@ -195,22 +195,7 @@ const AboutSection: React.FC = () => {
                                     transition={{ duration: 0.6, delay: 0.5 }}
                                     className="leading-relaxed"
                                 >
-                                    A prominent institution ranking amongst the top colleges in Tamil Nadu, was established with an
-                                    initiative to provide pragmatic learning. The institution has also partnered with a number of companies
-                                    to set a worldwide standard by offering students a diverse range of possibilities that combine education
-                                    and recreation.
-                                </motion.p>
-                                <motion.p
-                                    initial={{ opacity: 0 }}
-                                    animate={isCitInView ? { opacity: 1 } : { opacity: 0 }}
-                                    transition={{ duration: 0.6, delay: 0.7 }}
-                                    className="leading-relaxed"
-                                >
-                                    The students&apos; appetite for knowledge makes them thrive to prepare for the ready-to-serve industrial
-                                    requirements. This is delivered by CIT through professional ethics which is sated by frequent guest
-                                    lectures by professionals from various industries and academic backgrounds. Chennai Institute of
-                                    Technology has been awarded the National Award of Excellence for Best Placements &amp; has been ranked
-                                    Second in Tamil Nadu. Our college has made dreams of thousands of students come true
+                                    Ranked 2nd in Tamil Nadu, CIT prioritizes pragmatic learning through global industry partnerships that blend education with recreation. We prepare students for industrial demands through professional ethics and expert mentorship, turning thousands of dreams into reality. With state-of-the-art infrastructure and a student-centric approach, CIT nurtures innovation, leadership, and lifelong learning.  
                                 </motion.p>
                                 <motion.div
                                     initial={{ opacity: 0, x: -20 }}
@@ -315,21 +300,7 @@ const AboutSection: React.FC = () => {
                                     transition={{ duration: 0.6, delay: 0.5 }}
                                     className="leading-relaxed"
                                 >
-                                    The Grand Annual Cultural Fiesta of Chennai Institute Of Technology is an eminent spectacle that gives
-                                    the student community a platform to showcase their talents and sculpt their skills. This memorable
-                                    occasion is a perfect fusion of entertainment and knowledge-filled atmosphere with a potpourri of genres
-                                    that escalate the vibrance of celebration. The event inculcates a blend of virtues among the students
-                                    which makes them shine out of the crowd. This time, Takshashila&apos;s voyage will be an exhilarating
-                                    one, full of adventures that are fished straight out of the ocean.
-                                </motion.p>
-                                <motion.p
-                                    initial={{ opacity: 0 }}
-                                    animate={isTakshashilaInView ? { opacity: 1 } : { opacity: 0 }}
-                                    transition={{ duration: 0.6, delay: 0.7 }}
-                                    className="leading-relaxed"
-                                >
-                                    Through workshops, competitions, and technical presentations, Takshashila provides a platform for
-                                    students to showcase their talents and learn from industry experts.
+                                    Takshashila, CIT&apos;s Grand Annual Cultural Fiesta, blends entertainment with knowledge to showcase student talent. This year&apos;s ocean-inspired voyage features workshops, competitions, and technical presentations, fostering skills and virtues while celebrating a vibrant mix of genres.
                                 </motion.p>
                             </div>
                         </motion.div>
