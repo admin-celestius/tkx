@@ -61,19 +61,19 @@ const TiltCard: React.FC<{ children: React.ReactNode; className?: string }> = ({
 
 const coordinators = [
     {
-        name: "Vijay S",
+        name: "Dummy",
         role: "Student Coordinator",
         phone: "+91 93616 35716",
         email: "vijay@example.com"
     },
     {
-        name: "Thaman R",
+        name: "Dummy",
         role: "Student Coordinator",
         phone: "+91 93630 20563",
         email: "thaman@example.com"
     },
     {
-        name: "Sudharsan S",
+        name: "Dummy",
         role: "Student Coordinator",
         phone: "+91 63820 59942",
         email: "sudharsan@example.com"
