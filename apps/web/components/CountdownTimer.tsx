@@ -3,7 +3,7 @@
 import { useEffect, useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
-const CountdownTimer = () => {
+const CountdownTimer = ({ onExplore }: { onExplore?: () => void }) => {
     // Target Date: March 20, 2026 09:00:00 IST
     const targetDate = useMemo(() => new Date("2026-02-26T09:00:00+05:30").getTime(), []);
 
@@ -51,12 +51,12 @@ const CountdownTimer = () => {
     };
 
     return (
-        <div className="flex flex-col items-center gap-12 z-20 py-20">
+        <div className="flex flex-col items-center gap-8 z-20">
             <motion.div
                 variants={containerVariants}
                 initial="hidden"
                 animate="visible"
-                className="flex items-center gap-4 md:gap-10"
+                className="flex items-center gap-3 md:gap-6"
             >
                 <TimeUnit value={pad(timeLeft.days)} label="DAYS" />
                 <Separator title="DAYS" />
@@ -67,32 +67,81 @@ const CountdownTimer = () => {
                 <TimeUnit value={pad(timeLeft.seconds)} label="SECS" />
             </motion.div>
 
-            <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 1.5, duration: 1, ease: "easeOut" }}
-                className="flex flex-col items-center gap-4"
-            >
-                <div className="flex items-center gap-6 group/text relative">
-                    <div className="h-[1px] w-8 md:w-16 bg-gradient-to-r from-transparent via-amber-500/30 to-transparent" />
+            <div className="flex flex-col items-center gap-3">
+                <div className="flex items-center gap-4 group/text relative justify-center">
+                    <div className="h-[1px] w-4 md:w-16 bg-gradient-to-r from-transparent via-amber-500/30 to-transparent" />
 
-                    <div className="relative px-6 py-2 rounded-full border border-amber-500/20 group-hover/text:border-amber-500/50 transition-all duration-700 overflow-hidden shadow-[0_0_15px_rgba(212,175,55,0.05)] group-hover/text:shadow-[0_0_25px_rgba(212,175,55,0.15)]">
-                        {/* Shimmer effect on the border only could be complex, so let's use a subtle background glow */}
-                        <div className="absolute inset-0 bg-amber-500/0 group-hover/text:bg-amber-500/5 transition-colors duration-700" />
+                    <div className="flex flex-col items-center pointer-events-auto">
+                        <motion.button
+                            onClick={() => {
+                                if (onExplore) onExplore();
+                                window.location.href = '/timeline';
+                            }}
+                            className="group/btn key-hover relative w-[200px] h-[200px] bg-transparent transition-all duration-500 flex items-center justify-center pointer-events-auto"
+                        >
+                            <svg width="100%" height="100%" viewBox="0 0 200 200" className="drop-shadow-[0_0_20px_rgba(212,175,55,0.3)] group-hover/btn:drop-shadow-[0_0_35px_rgba(212,175,55,0.5)] transition-all duration-500">
+                                <defs>
+                                    <linearGradient id="goldGradientBtn" x1="0%" y1="0%" x2="100%" y2="100%">
+                                        <stop offset="0%" stopColor="#785A14" />
+                                        <stop offset="50%" stopColor="#F5D76E" />
+                                        <stop offset="100%" stopColor="#B98C23" />
+                                    </linearGradient>
+                                    <filter id="shadowBtn">
+                                        <feGaussianBlur stdDeviation="0.5" />
+                                    </filter>
+                                </defs>
+                                <path
+                                    d="M 60 100 L 100 60 L 140 100 L 100 140 Z"
+                                    fill="url(#goldGradientBtn)"
+                                    filter="url(#shadowBtn)"
+                                    className="transition-all duration-500 group-hover/btn:scale-110 origin-center"
+                                />
+                                <motion.path
+                                    d="M 64 100 L 100 64 L 136 100 L 135 101 L 100 66 L 65 101 L 64 100 Z"
+                                    fill="black"
+                                    initial={{ opacity: 0, scale: 0.8 }}
+                                    animate={{ opacity: 1, scale: 1 }}
+                                    transition={{ delay: 2, duration: 0.5 }}
+                                />
+                            </svg>
 
-                        <div className="relative text-gold-premium text-[11px] md:text-sm font-semibold tracking-[0.6em] md:tracking-[0.8em] uppercase transition-all duration-700 group-hover/text:tracking-[0.9em]">
-                            FEBRUARY 26 • COMMENCING ARRIVAL
-                        </div>
+                            {/* Static Key Indicator (Grey Star) */}
+                            <motion.div
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 0.8 }}
+                                transition={{ delay: 2.5, duration: 1 }}
+                                className="absolute inset-0 flex items-center justify-center pointer-events-none z-20"
+                            >
+                                <img
+                                    src="/cursor-star-grey.svg"
+                                    alt="Key Hole"
+                                    className="w-12 h-12"
+                                />
+                            </motion.div>
+
+                            {/* Outer Glow Pulse */}
+                            <div className="absolute inset-0 rounded-full bg-amber-500/5 blur-xl group-hover/btn:bg-amber-500/15 transition-all duration-500 animate-pulse" />
+                        </motion.button>
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{
+                                opacity: [0.6, 1, 0.6]
+                            }}
+                            transition={{
+                                delay: 3,
+                                duration: 3,
+                                repeat: Infinity,
+                                ease: "easeInOut"
+                            }}
+                            className="text-[10px] md:text-xs text-white/90 drop-shadow-[0_0_10px_rgba(255,255,255,0.3)] tracking-[0.4em] font-medium uppercase text-center mt-[-40px] relative z-10"
+                        >
+                            Use your cursor to Unlock the Journey
+                        </motion.div>
                     </div>
 
-                    <div className="h-[1px] w-8 md:w-16 bg-gradient-to-l from-transparent via-amber-500/30 to-transparent" />
+                    <div className="h-[1px] w-4 md:w-16 bg-gradient-to-l from-transparent via-amber-500/30 to-transparent" />
                 </div>
-
-                {/* Subtle Subtitle */}
-                <span className="text-white/30 text-[8px] md:text-[10px] tracking-[1.2em] uppercase font-light animate-pulse">
-
-                </span>
-            </motion.div>
+            </div>
         </div>
     );
 };
@@ -101,16 +150,17 @@ const TimeUnit = ({ value, label }: { value: string; label: string }) => {
     return (
         <motion.div
             variants={{
-                hidden: { opacity: 0, y: 30 },
-                visible: { opacity: 1, y: 0 }
+                hidden: { opacity: 0 },
+                visible: { opacity: 1 }
             }}
-            className="flex flex-col items-center gap-4 group"
+            transition={{ duration: 1, ease: "easeOut" }}
+            className="flex flex-col items-center gap-2 group"
         >
-            <div className="relative p-[2px] rounded-2xl overflow-hidden shadow-[0_0_30px_rgba(212,175,55,0.15)]">
+            <div className="relative p-[1.5px] rounded-full overflow-hidden shadow-[0_0_20px_rgba(212,175,55,0.1)]">
                 {/* Animated Gradient Border */}
                 <div className="absolute inset-[-100%] bg-[conic-gradient(from_0deg,transparent,rgba(212,175,55,0.6),transparent,transparent,rgba(212,175,55,0.6))] animate-[spin_8s_linear_infinite] group-hover:animate-[spin_4s_linear_infinite] transition-all" />
 
-                <div className="relative flex flex-col items-center justify-center min-w-[60px] md:min-w-[110px] h-[70px] md:h-[100px] bg-black/95 backdrop-blur-3xl rounded-[14px] border border-white/10 overflow-hidden">
+                <div className="relative flex flex-col items-center justify-center w-[60px] md:w-[90px] h-[60px] md:h-[90px] bg-black/95 backdrop-blur-3xl rounded-full border border-white/10 overflow-hidden">
                     {/* Inner Glow Effect */}
                     <div className="absolute inset-0 bg-gradient-to-br from-amber-500/15 via-transparent to-amber-500/25 pointer-events-none" />
                     <motion.div
@@ -123,7 +173,7 @@ const TimeUnit = ({ value, label }: { value: string; label: string }) => {
                     />
 
                     {/* Digit Container - Enhanced stability and visibility */}
-                    <div className="relative flex items-center justify-center tabular-nums leading-none text-4xl md:text-6xl">
+                    <div className="relative flex items-center justify-center tabular-nums leading-none text-2xl md:text-4xl">
                         {value.split("").map((digit, idx) => (
                             <div key={idx} className="relative w-[0.7em] md:w-[0.8em] h-[1.2em] md:h-[1.3em] flex items-center justify-center overflow-hidden">
                                 <AnimatePresence mode="popLayout" initial={false}>

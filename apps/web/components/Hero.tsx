@@ -99,7 +99,7 @@ export default function Hero() {
         // Animation phases
         let phase: "floating" | "line" | "wind" = "floating";
         let lineProgress = 0;
-        const lineTargetY = canvas.height / 2;
+        const lineTargetY = canvas.height * 0.60;
         const lineSpeed = 0.02; // Faster comet descent
         let time = 0;
         let windIntensity = 0;
