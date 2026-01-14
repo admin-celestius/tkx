@@ -12,7 +12,7 @@ const NavBar = () => {
   const isEventsPage = pathname === "/events";
 
   React.useEffect(() => {
-    if (pathname === "/events") setActiveIndex(1); // EVENTS
+    if (pathname === "/events") setActiveIndex(2); // EVENTS
     else if (pathname === "/") setActiveIndex(0); // HOME
     // For other sections, we keep the clicked state or default to Home
   }, [pathname]);

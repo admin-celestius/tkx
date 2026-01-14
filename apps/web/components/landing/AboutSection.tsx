@@ -6,8 +6,8 @@ import { useInView } from "framer-motion"
 import { useRef, MouseEvent, useMemo } from "react"
 import SlideShow from "../slideShow"
 
-const citImages: string[] = ["/1.jpeg", "/2.jpeg", "/3.jpeg"]
-const takshashilaImages: string[] = ["/4.JPG", "/5.jpg", "/6.JPG"]
+const citImages: string[] = ["/images/about/chairman.jpeg", "/images/about/students1.jpeg", "/images/about/f2.jpeg"]
+const takshashilaImages: string[] = ["/images/about/5.jpg", "/images/about/f6.JPG", "/images/about/f4.JPG"]
 
 // 3D Tilt Card Component
 const TiltCard: React.FC<{ children: React.ReactNode; className?: string }> = ({ children, className = "" }) => {
@@ -195,7 +195,7 @@ const AboutSection: React.FC = () => {
                                     transition={{ duration: 0.6, delay: 0.5 }}
                                     className="leading-relaxed"
                                 >
-                                    Ranked 2nd in Tamil Nadu, CIT prioritizes pragmatic learning through global industry partnerships that blend education with recreation. We prepare students for industrial demands through professional ethics and expert mentorship, turning thousands of dreams into reality. With state-of-the-art infrastructure and a student-centric approach, CIT nurtures innovation, leadership, and lifelong learning.  
+                                    Ranked 2nd in Tamil Nadu, CIT prioritizes pragmatic learning through global industry partnerships that blend education with recreation. We prepare students for industrial demands through professional ethics and expert mentorship, turning thousands of dreams into reality. With state-of-the-art infrastructure and a student-centric approach, CIT nurtures innovation, leadership, and lifelong learning.
                                 </motion.p>
                                 <motion.div
                                     initial={{ opacity: 0, x: -20 }}

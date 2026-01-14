@@ -12,17 +12,18 @@ interface Slide {
 
 interface CarouselProps {
     slides: Slide[];
+    onSelect?: (title: string | null) => void;
 }
 
-const Carousel: React.FC<CarouselProps> = ({ slides }) => {
+const Carousel: React.FC<CarouselProps> = ({ slides, onSelect }) => {
     const containerRef = useRef<HTMLDivElement>(null);
     const [isHovering, setIsHovering] = useState(false);
 
     // Animation refs
     const rotationRef = useRef(0);
     const isSnappingRef = useRef(false);
-    const speedRef = useRef(0.026); // 1.3x speed (approx 1.3 * 0.02)
-    const baseSpeed = 0.026;
+    const speedRef = useRef(0.008); // Reduced speed
+    const baseSpeed = 0.008;
     const hoverSpeed = 0.10; // Scaled hover speed
 
 
@@ -78,6 +79,9 @@ const Carousel: React.FC<CarouselProps> = ({ slides }) => {
             ease: "power3.out",
             onComplete: () => {
                 isSnappingRef.current = false;
+                if (onSelect) {
+                    onSelect(slides[index].title);
+                }
             }
         });
     };
@@ -100,7 +104,7 @@ const Carousel: React.FC<CarouselProps> = ({ slides }) => {
             const rad = (normalizedAngle * Math.PI) / 180;
 
             // Layout: Circle on XZ plane.
-            const radius = 450; // Reduced radius (was 600)
+            const radius = 450; // Increased radius (was 400)
             const x = Math.sin(rad) * radius;
             const z = Math.cos(rad) * radius - radius; // Shift z so front is at ~0, back is further away
 
@@ -162,7 +166,7 @@ const Carousel: React.FC<CarouselProps> = ({ slides }) => {
 
     return (
         <div
-            className="relative w-full h-[600px] flex items-center justify-center overflow-hidden perspective-1000"
+            className="relative w-full h-[560px] flex items-center justify-center overflow-hidden perspective-1000"
             ref={containerRef}
             onMouseEnter={() => setIsHovering(true)}
             onMouseLeave={() => setIsHovering(false)}
@@ -173,16 +177,25 @@ const Carousel: React.FC<CarouselProps> = ({ slides }) => {
             role="region"
             aria-label="3D Rotating Carousel"
         >
+            {/* Center Logo */}
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-30 pointer-events-none">
+                <img
+                    src="/tk-logo-gold.svg"
+                    alt="TK Logo"
+                    className="w-32 h-32 md:w-40 md:h-40 opacity-90 drop-shadow-[0_0_30px_rgba(214,178,90,0.6)]"
+                />
+            </div>
+
             {/* Floor Reflection Gradient */}
             <div className="absolute bottom-0 w-full h-1/2 bg-gradient-to-t from-black via-transparent to-transparent pointer-events-none z-10" />
 
             {slides.map((slide, i) => (
                 <div
                     key={i}
-                    className="carousel-slide absolute top-1/2 left-1/2 w-[220px] h-[320px] -ml-[110px] -mt-[160px] transform-style-3d will-change-transform cursor-pointer"
+                    className="carousel-slide absolute top-1/2 left-1/2 w-[300px] h-[320px] -ml-[150px] -mt-[160px] transform-style-3d will-change-transform cursor-pointer"
                     onClick={() => handleSlideClick(i)}
                 >
-                    {/* Slide Content */}
+                    {/* Slide Image Container */}
                     <div className="slide-inner w-full h-full rounded-xl overflow-hidden border-2 border-white/10 transition-all duration-300 relative bg-gray-900 group">
                         <img
                             src={slide.image}
@@ -190,13 +203,17 @@ const Carousel: React.FC<CarouselProps> = ({ slides }) => {
                             className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700"
                             loading="lazy"
                         />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60"></div>
-                        <div className="absolute bottom-0 left-0 p-6 text-white transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
-                            <h3 className="text-xl font-bold font-sans tracking-wide">{slide.title}</h3>
-                        </div>
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent"></div>
 
                         {/* Glossy highlight */}
                         <div className="absolute top-0 right-0 w-full h-full bg-gradient-to-bl from-white/10 to-transparent pointer-events-none"></div>
+                    </div>
+
+                    {/* External Title below image */}
+                    <div className="absolute top-full left-0 w-full pt-6 text-center">
+                        <h3 className="text-2xl font-bold font-sans tracking-[0.2em] text-[#d6b25a] drop-shadow-[0_0_10px_rgba(214,178,90,0.4)] whitespace-nowrap">
+                            {slide.title}
+                        </h3>
                     </div>
 
                     {/* Reflection below */}
